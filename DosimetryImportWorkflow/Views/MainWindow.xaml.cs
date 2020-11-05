@@ -28,16 +28,6 @@ namespace VMS.TPS
             InitializeComponent();
         }
 
-        private void ImportWorkflow_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.ValidateImportWorkflow();
-        }
-
-        private void Structures_Click(object sender, RoutedEventArgs e)
-        {
-            _vm.ValidateStructureDeletion();
-        }
-
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             _vm.CloseWindow();

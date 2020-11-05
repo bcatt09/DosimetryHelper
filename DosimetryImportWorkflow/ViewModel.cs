@@ -8,65 +8,235 @@ using VMS.TPS.Common.Model.Types;
 using VMS.TPS.Common.Model.API;
 using System.Windows;
 using System.Text.RegularExpressions;
+using GalaSoft.MvvmLight;
+using System.Runtime.InteropServices.WindowsRuntime;
+using GalaSoft.MvvmLight.CommandWpf;
 
 namespace VMS.TPS
 {
-	public class ViewModel : INotifyPropertyChanged
+	public class ViewModel : ViewModelBase
     {
         private ScriptContext _context;
-        private string _patientName;
-        private string _datasetName;
-        private string _courseName;
-        private string _planName;
-        private IEnumerable<Structure> _pois;
-        private Structure _selectedPoi;
-        private IEnumerable<Image> _imageSets;
-        private Image _selectedImageSet;
-        private List<string> _courses;
-        private string _selectedCourseFromComboBox;
-        private string _selectedCourse;
-        private bool _datasetNameFlag;
-        private bool _courseNameFlag;
-        private bool _planNameFlag;
-        private bool _isoFlag;
-        private Window _window;
-        private Visibility _selectedCourseVisibility;
-        private Visibility _selectedImageSetVisibility;
-        private List<StructureListItem> _structureList;
-        private bool _importWorkflowInvalid = false;
-        private bool _structureDeletionInvalid = false;
         private Regex _regEx;
         private bool _initialLoad;
 
-        public string PatientName { get { return _patientName; } set { _patientName = value; OnPropertyChanged("PatientName"); } }
-        public string DatasetName { get { return _datasetName; } set { _datasetName = value; OnPropertyChanged("DatasetName"); } }
-        public string CourseName { get { return _courseName; } set { _courseName = value; OnPropertyChanged("CourseName"); } }
-        public string PlanName { get { return _planName; } set { _planName = value; OnPropertyChanged("PlanName"); } }
-        public IEnumerable<Structure> POIs { get { return _pois; } set { _pois = value; OnPropertyChanged("POIs"); } }
-        public Structure SelectedPOI { get { return _selectedPoi; } set { _selectedPoi = value; OnPropertyChanged("SelectedPOI"); } }
-        public IEnumerable<Image> ImageSets { get { return _imageSets; } set { _imageSets = value; OnPropertyChanged("ImageSets"); } }
-        public Image SelectedImageSet { get { return _selectedImageSet; } set { _selectedImageSet = value; OnPropertyChanged("SelectedImageSet"); } }
-        public List<string> Courses { get { return _courses; } set { _courses = value; OnPropertyChanged("Courses"); } }
-        public string SelectedCourseFromComboBox { get { return _selectedCourseFromComboBox; } set { _selectedCourseFromComboBox = value; OnPropertyChanged("SelectedCourseFromComboBox"); } }
-        public string SelectedCourse { get { return _selectedCourse; } set { _selectedCourse = value; OnPropertyChanged("SelectedCourse"); } }
-        public bool DatasetNameFlag { get { return _datasetNameFlag; } set { _datasetNameFlag = value; OnPropertyChanged("DatasetNameFlag"); } }
-        public bool CourseNameFlag { get { return _courseNameFlag; } set { _courseNameFlag = value; OnPropertyChanged("CourseNameFlag"); } }
-        public bool PlanNameFlag { get { return _planNameFlag; } set { _planNameFlag = value; OnPropertyChanged("PlanNameFlag"); } }
-        public bool IsoFlag { get { return _isoFlag; } set { _isoFlag = value; OnPropertyChanged("IsoFlag"); } }
-        public Visibility SelectedCourseVisibility { get { return _selectedCourseVisibility; } set { _selectedCourseVisibility = value; OnPropertyChanged("SelectedCourseVisibility"); } }
-        public Visibility SelectedImageSetVisibility { get { return _selectedImageSetVisibility; } set { _selectedImageSetVisibility = value; OnPropertyChanged("SelectedImageSetVisibility"); } }
-        public List<StructureListItem> StructureList { get { return _structureList; } set { _structureList = value; OnPropertyChanged("StructureList"); } }
-        public bool ImportWorkflowInvalid { get { return _importWorkflowInvalid; } set { _importWorkflowInvalid = value; OnPropertyChanged("ImportWorkflowInvalid"); } }
-        public bool StructureDeletionInvalid { get { return _structureDeletionInvalid; } set { _structureDeletionInvalid = value; OnPropertyChanged("StructureDeletionInvalid"); } }
-        public RelayCommand 
+        private string _patientName;
+        public string PatientName
+        {
+            get { return _patientName; }
+            set { Set(ref _patientName, value); }
+        }
+        private string _datasetName;
+        public string DatasetName
+        {
+            get { return _datasetName; }
+            set 
+            {
+                Set(ref _datasetName, value);
 
+                DatasetNameFlag = true;
+            }
+        }
+        private string _courseName;
+        public string CourseName
+        {
+            get { return _courseName; }
+            set
+            {
+                Set(ref _courseName, value);
+
+                SelectedCourse = CourseName;
+                CourseNameFlag = true;
+
+                if (PlanNameFlag)
+                {
+                    if (CourseNameFlag)
+                        SelectedCourse = CourseName;
+                    else
+                        SelectedCourse = SelectedCourseFromComboBox;
+                }
+            }
+        }
+        private string _planName;
+        public string PlanName
+        {
+            get { return _planName; }
+            set 
+            {
+                Set(ref _planName, value);
+
+                PlanNameFlag = true;
+            }
+        }
+        private IEnumerable<Structure> _pois;
+        public IEnumerable<Structure> POIs
+        {
+            get { return _pois; }
+            set { Set(ref _pois, value); }
+        }
+        private Structure _selectedPoi;
+        public Structure SelectedPOI
+        {
+            get { return _selectedPoi; }
+            set 
+            {
+                Set(ref _selectedPoi, value);
+
+                if (value != SelectedPOI)
+                    IsoFlag = true;
+            }
+        }
+        private IEnumerable<Image> _imageSets;
+        public IEnumerable<Image> ImageSets
+        {
+            get { return _imageSets; }
+            set { Set(ref _imageSets, value); }
+        }
+        private Image _selectedImageSet;
+        public Image SelectedImageSet
+        {
+            get { return _selectedImageSet; }
+            set { Set(ref _selectedImageSet, value); }
+        }
+        private List<string> _courses;
+        public List<string> Courses
+        {
+            get { return _courses; }
+            set { Set(ref _courses, value); }
+        }
+        private string _selectedCourseFromComboBox;
+        public string SelectedCourseFromComboBox
+        {
+            get { return _selectedCourseFromComboBox; }
+            set 
+            { 
+                Set(ref _selectedCourseFromComboBox, value);
+
+                if (PlanNameFlag)
+                {
+                    if (CourseNameFlag)
+                        SelectedCourse = CourseName;
+                    else
+                        SelectedCourse = SelectedCourseFromComboBox;
+                }
+            }
+        }
+        private string _selectedCourse;
+        public string SelectedCourse
+        {
+            get { return _selectedCourse; }
+            set { Set(ref _selectedCourse, value); }
+        }
+        private bool _datasetNameFlag;
+        public bool DatasetNameFlag
+        {
+            get { return _datasetNameFlag; }
+            set { Set(ref _datasetNameFlag, value); }
+        }
+        private bool _courseNameFlag;
+        public bool CourseNameFlag
+        {
+            get { return _courseNameFlag; }
+            set 
+            { 
+                Set(ref _courseNameFlag, value);
+
+                if (CourseNameFlag)
+                    SelectedCourseVisibility = Visibility.Hidden;
+                else
+                    SelectedCourseVisibility = Visibility.Visible;
+
+                if (PlanNameFlag)
+                {
+                    if (CourseNameFlag)
+                        SelectedCourse = CourseName;
+                    else
+                        SelectedCourse = SelectedCourseFromComboBox;
+                }
+            }
+        }
+        private bool _planNameFlag;
+        public bool PlanNameFlag
+        {
+            get { return _planNameFlag; }
+            set 
+            { 
+                Set(ref _planNameFlag, value);
+
+                if (PlanNameFlag)
+                    SelectedImageSetVisibility = Visibility.Visible;
+                else
+                {
+                    SelectedCourseVisibility = Visibility.Hidden;
+                    SelectedImageSetVisibility = Visibility.Hidden;
+                }
+            }
+        }
+        private bool _isoFlag;
+        public bool IsoFlag
+        {
+            get { return _isoFlag; }
+            set { Set(ref _isoFlag, value); }
+        }
+        private Window _window;
+        public Window Window
+        {
+            get { return _window; }
+            set { Set(ref _window, value); }
+        }
+        private Visibility _selectedCourseVisibility;
+        public Visibility SelectedCourseVisibility
+        {
+            get { return _selectedCourseVisibility; }
+            set { Set(ref _selectedCourseVisibility, value); }
+        }
+        private Visibility _selectedImageSetVisibility;
+        public Visibility SelectedImageSetVisibility
+        {
+            get { return _selectedImageSetVisibility; }
+            set { Set(ref _selectedImageSetVisibility, value); }
+        }
+        private List<StructureListItem> _structureList;
+        public List<StructureListItem> StructureList
+        {
+            get { return _structureList; }
+            set { Set(ref _structureList, value); }
+        }
+        private bool _importWorkflowInvalid = false;
+        public bool ImportWorkflowInvalid
+        {
+            get { return _importWorkflowInvalid; }
+            set { Set(ref _importWorkflowInvalid, value); }
+        }
+        private bool _structureDeletionInvalid = false;
+        public bool StructureDeletionInvalid
+        {
+            get { return _structureDeletionInvalid; }
+            set { Set(ref _structureDeletionInvalid, value); }
+        }
+
+        // Commands
+        public RelayCommand GoToImportWorkflowCommand
+        {
+            get;
+            private set;
+        }
+
+        public RelayCommand GoToStructureDeletionCommand
+        {
+            get;
+            private set;
+        }
+
+        // Constructor
         public ViewModel(ScriptContext context, Window window)
         {
             _window = window;
             _context = context;
-        }
 
-        
+            GoToImportWorkflowCommand = new RelayCommand(ShowImportWorkflow, CanGoToImportWorkflow);
+            GoToStructureDeletionCommand = new RelayCommand(ShowStructureDeletion, CanGoToStructureDeletion);
+        }
 
         public bool CanGoToImportWorkflow()
         {
@@ -76,17 +246,6 @@ namespace VMS.TPS
         public bool CanGoToStructureDeletion()
         {
             return _context.StructureSet != null;
-        }
-
-
-
-
-        public void ValidateImportWorkflow()
-        {
-            if (_context.Image != null)
-                ShowImportWorkflow();
-            else
-                ImportWorkflowInvalid = true;
         }
 
         public void ShowImportWorkflow()
@@ -278,13 +437,6 @@ namespace VMS.TPS
             }
         }
 
-        public void ValidateStructureDeletion()
-        {
-            if (_context.StructureSet != null)
-                ShowStructureDeletion();
-            else
-                StructureDeletionInvalid = true;
-        }
         public void ShowStructureDeletion()
         {
             StructureWindow structureWindow = new StructureWindow(this);
@@ -350,62 +502,5 @@ namespace VMS.TPS
         {
             _window.Close();
         }
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		protected void OnPropertyChanged(string name)
-		{
-            if (!_initialLoad)
-            {
-                PropertyChangedEventHandler handler = PropertyChanged;
-
-                if (name == "DatasetName")
-                    DatasetNameFlag = true;
-                if (name == "CourseName")
-                {
-                    SelectedCourse = CourseName;
-                    CourseNameFlag = true;
-                }
-                if (name == "PlanName")
-                    PlanNameFlag = true;
-                if (name == "SelectedPOI")
-                {
-                    if (SelectedPOI != null)
-                        IsoFlag = true;
-                }
-                if (name == "CourseNameFlag" || name == "PlanNameFlag")
-                {
-                    if (CourseNameFlag)
-                        SelectedCourseVisibility = Visibility.Hidden;
-                    else
-                        SelectedCourseVisibility = Visibility.Visible;
-
-                    if (PlanNameFlag)
-                        SelectedImageSetVisibility = Visibility.Visible;
-                    else
-                    {
-                        SelectedCourseVisibility = Visibility.Hidden;
-                        SelectedImageSetVisibility = Visibility.Hidden;
-                    }
-                }
-
-                if (name == "CourseName" || name == "SelectedCourseFromComboBox" || name == "CourseNameFlag")
-                {
-                    if (PlanNameFlag)
-                    {
-                        if (CourseNameFlag)
-                            SelectedCourse = CourseName;
-                        else
-                            SelectedCourse = SelectedCourseFromComboBox;
-                    }
-                }
-
-
-                if (handler != null)
-                {
-                    handler(this, new PropertyChangedEventArgs(name));
-                }
-            }
-		}
 	}
 }
