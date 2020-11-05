@@ -35,7 +35,7 @@ namespace VMS.TPS
             _vm.MainScreen();
         }
 
-        private void Back_Click(object sender, RoutedEventArgs e)
+        private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             _vm.MainScreen();
         }

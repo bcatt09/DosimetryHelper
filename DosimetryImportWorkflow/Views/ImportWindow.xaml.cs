@@ -28,14 +28,14 @@ namespace VMS.TPS
 			InitializeComponent();
         }
 
-        private void Back_Click(object sender, RoutedEventArgs e)
+        private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             _vm.MainScreen();
         }
 
         private void Finalize_Click(object sender, RoutedEventArgs e)
         {
-            _vm.ImportHelperPerformUpdates();
+            _vm.ImportWorkflowPerformUpdates();
             //_vm.PerformUpdatesDebug();
 
             _vm.MainScreen();
@@ -55,7 +55,7 @@ namespace VMS.TPS
             else if (textbox.Text == "Enter Course ID")
             {
                 _vm.Courses.ToList().Insert(0, "");
-                textbox.Text = _vm.ImportHelperGetNewCourseName();
+                textbox.Text = _vm.ImportWorkflowGetNewCourseName();
             }
             else if (textbox.Text == "Enter Plan ID")
                 textbox.Text = "";

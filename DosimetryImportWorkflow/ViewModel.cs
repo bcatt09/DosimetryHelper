@@ -33,7 +33,7 @@ namespace VMS.TPS
         private Visibility _selectedCourseVisibility;
         private Visibility _selectedImageSetVisibility;
         private List<StructureListItem> _structureList;
-        private bool _importHelperInvalid = false;
+        private bool _importWorkflowInvalid = false;
         private bool _structureDeletionInvalid = false;
         private Regex _regEx;
         private bool _initialLoad;
@@ -56,8 +56,9 @@ namespace VMS.TPS
         public Visibility SelectedCourseVisibility { get { return _selectedCourseVisibility; } set { _selectedCourseVisibility = value; OnPropertyChanged("SelectedCourseVisibility"); } }
         public Visibility SelectedImageSetVisibility { get { return _selectedImageSetVisibility; } set { _selectedImageSetVisibility = value; OnPropertyChanged("SelectedImageSetVisibility"); } }
         public List<StructureListItem> StructureList { get { return _structureList; } set { _structureList = value; OnPropertyChanged("StructureList"); } }
-        public bool ImportHelperInvalid { get { return _importHelperInvalid; } set { _importHelperInvalid = value; OnPropertyChanged("ImportHelperInvalid"); } }
+        public bool ImportWorkflowInvalid { get { return _importWorkflowInvalid; } set { _importWorkflowInvalid = value; OnPropertyChanged("ImportWorkflowInvalid"); } }
         public bool StructureDeletionInvalid { get { return _structureDeletionInvalid; } set { _structureDeletionInvalid = value; OnPropertyChanged("StructureDeletionInvalid"); } }
+        public RelayCommand 
 
         public ViewModel(ScriptContext context, Window window)
         {
@@ -65,20 +66,36 @@ namespace VMS.TPS
             _context = context;
         }
 
-        public void ValidateImportHelper()
+        
+
+        public bool CanGoToImportWorkflow()
         {
-            if (_context.Image != null)
-                ShowImportHelper();
-            else
-                ImportHelperInvalid = true;
+            return _context.Image != null;
         }
 
-        public void ShowImportHelper()
+        public bool CanGoToStructureDeletion()
+        {
+            return _context.StructureSet != null;
+        }
+
+
+
+
+        public void ValidateImportWorkflow()
+        {
+            if (_context.Image != null)
+                ShowImportWorkflow();
+            else
+                ImportWorkflowInvalid = true;
+        }
+
+        public void ShowImportWorkflow()
         {
             _initialLoad = true;
 
             ImportWindow importWindow = new ImportWindow(this);
             _window.Content = importWindow;
+            _window.Title = $"Import Workflow - {_context.Patient.Name}";
 
             //look for Courses named "C##" or "## Rt Lung"
             _regEx = new Regex(@"(?:C(?<index>\d+))|(?:(?<index>\d+) .*)");
@@ -104,6 +121,7 @@ namespace VMS.TPS
 
             //can I somehow make it show POI - CT_50_1 to know what dataset it's coming from?
             // I can't seem to just get the structure set that it's from though to get the image
+            
 
 
 
@@ -118,7 +136,7 @@ namespace VMS.TPS
             _initialLoad = false;
         }
 
-        public void ImportHelperPerformUpdates()
+        public void ImportWorkflowPerformUpdates()
         {
             _context.Patient.BeginModifications();
 
@@ -162,7 +180,7 @@ namespace VMS.TPS
             }
             catch
             {
-                ESAPILog.Entry(_context, "DosimetryHelper", $"Could not rename image and structure set to {DatasetName}");
+                //ESAPILog.Entry(_context, "DosimetryHelper", $"Could not rename image and structure set to {DatasetName}");
                 MessageBox.Show($"Could not rename image and structure set to {DatasetName}\n\nYou may need to rename them manually");
             }
 
@@ -179,14 +197,14 @@ namespace VMS.TPS
                     }
                     else
                     {
-                        ESAPILog.Entry(_context, "DosimetryHelper", $"Could not add a new course to patient");
+                        //ESAPILog.Entry(_context, "DosimetryHelper", $"Could not add a new course to patient");
                         MessageBox.Show("Could not add a new course to patient\n\nYou may need to add course and plan manually", "Could Not Add Course", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }
             catch
             {
-                ESAPILog.Entry(_context, "DosimetryHelper", $"Could not add new course ({CourseName})");
+                //ESAPILog.Entry(_context, "DosimetryHelper", $"Could not add new course ({CourseName})");
                 MessageBox.Show($"Could not add new course ({CourseName})\n\nYou may need to add course and plan manually");
             }
 
@@ -207,14 +225,14 @@ namespace VMS.TPS
                     }
                     else
                     {
-                        ESAPILog.Entry(_context, "DosimetryHelper", $"Could not add a new plan to course {c.Id} using structure set {SelectedStructureSet} and image set {SelectedImageSet}");
+                        //ESAPILog.Entry(_context, "DosimetryHelper", $"Could not add a new plan to course {c.Id} using structure set {SelectedStructureSet} and image set {SelectedImageSet}");
                         MessageBox.Show($"Could not add a new plan to course {c.Id} using structure set {SelectedStructureSet} and image set {SelectedImageSet}\n\nYou may need to add the plan manually", "Could Not Add Plan", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }
             catch
             {
-                ESAPILog.Entry(_context, "DosimetryHelper", $"Could not add new plan ({PlanName})");
+                //ESAPILog.Entry(_context, "DosimetryHelper", $"Could not add new plan ({PlanName})");
                 MessageBox.Show($"Could not add new plan ({PlanName})\n\nYou may need to add the plan manually");
             }
 
@@ -228,14 +246,14 @@ namespace VMS.TPS
             }
             catch
             {
-                ESAPILog.Entry(_context, "DosimetryHelper", $"Could not move user origin to {SelectedPOI.Id} ({SelectedPOI.CenterPoint})");
+                //ESAPILog.Entry(_context, "DosimetryHelper", $"Could not move user origin to {SelectedPOI.Id} ({SelectedPOI.CenterPoint})");
                 MessageBox.Show($"Could not move user origin to {SelectedPOI.Id} ({SelectedPOI.CenterPoint})\n\nYou may need to set the user origin manually");
             }
 
-            ESAPILog.Entry(_context, "DosimetryHelper", "");
+            //ESAPILog.Entry(_context, "DosimetryHelper", "");
         }
 
-        public void ImportHelperPerformUpdatesDebug()
+        public void ImportWorkflowPerformUpdatesDebug()
         {
             MessageBox.Show($"Dataset - Flag:{DatasetNameFlag} - Name:{DatasetName}\n" +
                             $"POI - Flag:{IsoFlag} - Name:{SelectedPOI}\n" +
@@ -243,7 +261,7 @@ namespace VMS.TPS
                             $"Plan - Flag:{PlanNameFlag} - Name:{PlanName} - Course:{SelectedCourse} - Dataset:{SelectedImageSet}");
         }
 
-        public string ImportHelperGetNewCourseName()
+        public string ImportWorkflowGetNewCourseName()
         {
             try
             {
@@ -271,6 +289,7 @@ namespace VMS.TPS
         {
             StructureWindow structureWindow = new StructureWindow(this);
             _window.Content = structureWindow;
+            _window.Title = $"Structure Deletion - {_context.Patient.Name}";
 
             StructureList = new List<StructureListItem>();
 
@@ -323,6 +342,7 @@ namespace VMS.TPS
         public void MainScreen()
         {
             _window.Content = new MainWindow(this);
+            _window.Title = $"Dosimetry Helper - {_context.Patient.Name}";
             _window.SizeToContent = SizeToContent.WidthAndHeight;
         }
 

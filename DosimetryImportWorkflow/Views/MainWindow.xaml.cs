@@ -28,9 +28,9 @@ namespace VMS.TPS
             InitializeComponent();
         }
 
-        private void ImportHelper_Click(object sender, RoutedEventArgs e)
+        private void ImportWorkflow_Click(object sender, RoutedEventArgs e)
         {
-            _vm.ValidateImportHelper();
+            _vm.ValidateImportWorkflow();
         }
 
         private void Structures_Click(object sender, RoutedEventArgs e)

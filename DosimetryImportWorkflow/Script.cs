@@ -21,7 +21,6 @@ namespace VMS.TPS
 
 		public void Execute(ScriptContext context, Window window)
 		{
-			window.Background = System.Windows.Media.Brushes.AliceBlue;
 			window.KeyDown += (object sender, KeyEventArgs e) => { if (e.Key == Key.Escape) window.Close(); };
 			window.Title = $"Dosimetry Helper - {context.Patient.Name}";
 			window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
