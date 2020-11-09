@@ -14,78 +14,36 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using VMS.TPS.Common.Model.API;
 
-namespace VMS.TPS
+namespace DosimetryHelper
 {
     /// <summary>
     /// Interaction logic for StructureWindow.xaml
     /// </summary>
-    public partial class StructureWindow : UserControl
+    public partial class StructureWindow : Window
     {
-        private readonly ViewModel _vm;
+        private readonly StructureDeletionViewModel _vm;
 
-        public StructureWindow(ViewModel viewModel)
+        public StructureWindow(StructureDeletionViewModel viewModel, Window owner)
         {
             _vm = viewModel;
+            DataContext = viewModel;
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            SizeToContent = SizeToContent.WidthAndHeight;
+            Title = $"Structure Deletion";
+            Owner = owner;
             InitializeComponent();
+            ShowDialog();
         }
 
         private void Finalize_Click(object sender, RoutedEventArgs e)
         {
-            _vm.StructureDeletionPerformUpdates();
-            _vm.MainScreen();
+            //_vm.StructureDeletionPerformUpdates();
+            Close();
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            _vm.MainScreen();
-        }
-    }
-
-    public class BooleanToYesNoConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if ((bool)value)
-                return "Yes";
-            else
-                return "No";
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value.ToString().ToLower() == "yes")
-                return true;
-            else
-                return false;
-        }
-    }
-
-    public class BooleanToColorConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if ((bool)value)
-                return "LimeGreen";
-            else
-                return "OrangeRed";
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class StructureToIdConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return ((Structure)value).Id;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
+            Close();
         }
     }
 }

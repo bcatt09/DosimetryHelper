@@ -1,11 +1,10 @@
-﻿<UserControl x:Class="VMS.TPS.MainWindow"
+﻿<UserControl x:Class="DosimetryHelper.MainWindow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="clr-namespace:VMS.TPS"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:converters="clr-namespace:XAMLConverters"
+             xmlns:converters="clr-namespace:DosimetryHelper.Converters"
              mc:Ignorable="d"
              Height="200" Width="400"
              Background="{DynamicResource MahApps.Brushes.Window.Background}">
@@ -18,8 +17,6 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.FlatButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <local:InvalidConverterButton x:Key="InvalidConverterButton"/>
-            <local:InvalidConverterTextBlock x:Key="InvalidConverterTextBlock"/>
             <converters:FalseToStringConverter x:Key="falseToStringConverter"/>
             <sys:String x:Key="importWorkflowValidationFailure">Please load an image set before running</sys:String>
             <sys:String x:Key="structureDeletionValidationFailure">Please load a plan or structure set before running</sys:String>
@@ -54,27 +51,5 @@
                 Click="Close_Click" 
                 Margin="50,8" 
                 Grid.Row="2"/>
-
-        <!--Button Content="Import Workflow" 
-                Style="{StaticResource MahApps.Styles.Button.Flat}"
-                Click="ImportWorkflow_Click"
-                Margin="50,8" 
-                Grid.Row="0" 
-                Visibility="{Binding ImportWorkflowInvalid, Converter={StaticResource InvalidConverterButton}}"/>
-        <Button Content="Delete Empty Structures" 
-                Style="{StaticResource MahApps.Styles.Button.Flat}"
-                Click="Structures_Click" 
-                Margin="50,8" 
-                Grid.Row="1" 
-                Visibility="{Binding StructureDeletionInvalid, Converter={StaticResource InvalidConverterButton}}"/>
-        <Button Content="Close" 
-                Style="{StaticResource MahApps.Styles.Button.Flat}"
-                Click="Close_Click" 
-                Margin="50,8" 
-                Grid.Row="2"/>
-
-        <TextBlock Text="Please load an image set before running" Name="ImportHelperInvalidText" Foreground="OrangeRed" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" Grid.Row="0" Visibility="{Binding ImportWorkflowInvalid, Converter={StaticResource InvalidConverterTextBlock}}"/>
-        <TextBlock Text="Please load a plan or structure set before running" Name="StructureDeletionInvalidText" Foreground="OrangeRed" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14" Grid.Row="1" Visibility="{Binding StructureDeletionInvalid, Converter={StaticResource InvalidConverterTextBlock}}"/>
-        -->
     </Grid>
 </UserControl>

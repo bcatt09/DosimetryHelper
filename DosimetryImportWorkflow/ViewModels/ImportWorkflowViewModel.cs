@@ -1,24 +1,19 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using VMS.TPS.Common.Model.Types;
-using VMS.TPS.Common.Model.API;
-using System.Windows;
 using System.Text.RegularExpressions;
-using GalaSoft.MvvmLight;
-using System.Runtime.InteropServices.WindowsRuntime;
-using GalaSoft.MvvmLight.CommandWpf;
+using System.Threading.Tasks;
+using System.Windows;
+using VMS.TPS.Common.Model.API;
 
-namespace VMS.TPS
+namespace DosimetryHelper
 {
-	public class ViewModel : ViewModelBase
+    public class ImportWorkflowViewModel : ViewModelBase
     {
         private ScriptContext _context;
         private Regex _regEx;
-        private bool _initialLoad;
 
         private string _patientName;
         public string PatientName
@@ -30,10 +25,9 @@ namespace VMS.TPS
         public string DatasetName
         {
             get { return _datasetName; }
-            set 
+            set
             {
                 Set(ref _datasetName, value);
-
                 DatasetNameFlag = true;
             }
         }
@@ -44,27 +38,17 @@ namespace VMS.TPS
             set
             {
                 Set(ref _courseName, value);
-
                 SelectedCourse = CourseName;
                 CourseNameFlag = true;
-
-                if (PlanNameFlag)
-                {
-                    if (CourseNameFlag)
-                        SelectedCourse = CourseName;
-                    else
-                        SelectedCourse = SelectedCourseFromComboBox;
-                }
             }
         }
         private string _planName;
         public string PlanName
         {
             get { return _planName; }
-            set 
+            set
             {
                 Set(ref _planName, value);
-
                 PlanNameFlag = true;
             }
         }
@@ -78,11 +62,10 @@ namespace VMS.TPS
         public Structure SelectedPOI
         {
             get { return _selectedPoi; }
-            set 
+            set
             {
                 Set(ref _selectedPoi, value);
-
-                if (value != SelectedPOI)
+                if (SelectedPOI != null)
                     IsoFlag = true;
             }
         }
@@ -108,17 +91,10 @@ namespace VMS.TPS
         public string SelectedCourseFromComboBox
         {
             get { return _selectedCourseFromComboBox; }
-            set 
-            { 
+            set
+            {
                 Set(ref _selectedCourseFromComboBox, value);
-
-                if (PlanNameFlag)
-                {
-                    if (CourseNameFlag)
-                        SelectedCourse = CourseName;
-                    else
-                        SelectedCourse = SelectedCourseFromComboBox;
-                }
+                UpdateVisiblities();
             }
         }
         private string _selectedCourse;
@@ -137,39 +113,20 @@ namespace VMS.TPS
         public bool CourseNameFlag
         {
             get { return _courseNameFlag; }
-            set 
-            { 
+            set
+            {
                 Set(ref _courseNameFlag, value);
-
-                if (CourseNameFlag)
-                    SelectedCourseVisibility = Visibility.Hidden;
-                else
-                    SelectedCourseVisibility = Visibility.Visible;
-
-                if (PlanNameFlag)
-                {
-                    if (CourseNameFlag)
-                        SelectedCourse = CourseName;
-                    else
-                        SelectedCourse = SelectedCourseFromComboBox;
-                }
+                UpdateVisiblities();
             }
         }
         private bool _planNameFlag;
         public bool PlanNameFlag
         {
             get { return _planNameFlag; }
-            set 
-            { 
+            set
+            {
                 Set(ref _planNameFlag, value);
-
-                if (PlanNameFlag)
-                    SelectedImageSetVisibility = Visibility.Visible;
-                else
-                {
-                    SelectedCourseVisibility = Visibility.Hidden;
-                    SelectedImageSetVisibility = Visibility.Hidden;
-                }
+                UpdateVisiblities();
             }
         }
         private bool _isoFlag;
@@ -177,12 +134,6 @@ namespace VMS.TPS
         {
             get { return _isoFlag; }
             set { Set(ref _isoFlag, value); }
-        }
-        private Window _window;
-        public Window Window
-        {
-            get { return _window; }
-            set { Set(ref _window, value); }
         }
         private Visibility _selectedCourseVisibility;
         public Visibility SelectedCourseVisibility
@@ -196,65 +147,11 @@ namespace VMS.TPS
             get { return _selectedImageSetVisibility; }
             set { Set(ref _selectedImageSetVisibility, value); }
         }
-        private List<StructureListItem> _structureList;
-        public List<StructureListItem> StructureList
-        {
-            get { return _structureList; }
-            set { Set(ref _structureList, value); }
-        }
-        private bool _importWorkflowInvalid = false;
-        public bool ImportWorkflowInvalid
-        {
-            get { return _importWorkflowInvalid; }
-            set { Set(ref _importWorkflowInvalid, value); }
-        }
-        private bool _structureDeletionInvalid = false;
-        public bool StructureDeletionInvalid
-        {
-            get { return _structureDeletionInvalid; }
-            set { Set(ref _structureDeletionInvalid, value); }
-        }
-
-        // Commands
-        public RelayCommand GoToImportWorkflowCommand
-        {
-            get;
-            private set;
-        }
-
-        public RelayCommand GoToStructureDeletionCommand
-        {
-            get;
-            private set;
-        }
-
+        
         // Constructor
-        public ViewModel(ScriptContext context, Window window)
+        public ImportWorkflowViewModel(ScriptContext context)
         {
-            _window = window;
             _context = context;
-
-            GoToImportWorkflowCommand = new RelayCommand(ShowImportWorkflow, CanGoToImportWorkflow);
-            GoToStructureDeletionCommand = new RelayCommand(ShowStructureDeletion, CanGoToStructureDeletion);
-        }
-
-        public bool CanGoToImportWorkflow()
-        {
-            return _context.Image != null;
-        }
-
-        public bool CanGoToStructureDeletion()
-        {
-            return _context.StructureSet != null;
-        }
-
-        public void ShowImportWorkflow()
-        {
-            _initialLoad = true;
-
-            ImportWindow importWindow = new ImportWindow(this);
-            _window.Content = importWindow;
-            _window.Title = $"Import Workflow - {_context.Patient.Name}";
 
             //look for Courses named "C##" or "## Rt Lung"
             _regEx = new Regex(@"(?:C(?<index>\d+))|(?:(?<index>\d+) .*)");
@@ -280,7 +177,7 @@ namespace VMS.TPS
 
             //can I somehow make it show POI - CT_50_1 to know what dataset it's coming from?
             // I can't seem to just get the structure set that it's from though to get the image
-            
+
 
 
 
@@ -290,9 +187,6 @@ namespace VMS.TPS
             PlanNameFlag = false;
             SelectedCourseVisibility = Visibility.Hidden;
             SelectedImageSetVisibility = Visibility.Hidden;
-            _window.SizeToContent = SizeToContent.WidthAndHeight;
-
-            _initialLoad = false;
         }
 
         public void ImportWorkflowPerformUpdates()
@@ -315,7 +209,7 @@ namespace VMS.TPS
                 else
                     SelectedStructureSet = _context.Patient.StructureSets.Where(s => s.Image == SelectedImageSet).First();
             }
-               
+
             try
             {
                 if (DatasetNameFlag)
@@ -412,12 +306,35 @@ namespace VMS.TPS
             //ESAPILog.Entry(_context, "DosimetryHelper", "");
         }
 
+        public void UpdateVisiblities()
+        {
+            if (CourseNameFlag)
+                SelectedCourseVisibility = Visibility.Hidden;
+            else
+                SelectedCourseVisibility = Visibility.Visible;
+
+            if (PlanNameFlag)
+            {
+                if (CourseNameFlag)
+                    SelectedCourse = CourseName;
+                else
+                    SelectedCourse = SelectedCourseFromComboBox;
+
+                SelectedImageSetVisibility = Visibility.Visible;
+            }
+            else
+            {
+                SelectedCourseVisibility = Visibility.Hidden;
+                SelectedImageSetVisibility = Visibility.Hidden;
+            }
+        }
+
         public void ImportWorkflowPerformUpdatesDebug()
         {
             MessageBox.Show($"Dataset - Flag:{DatasetNameFlag} - Name:{DatasetName}\n" +
                             $"POI - Flag:{IsoFlag} - Name:{SelectedPOI}\n" +
                             $"Course - Flag:{CourseNameFlag} - Name:{CourseName}\n" +
-                            $"Plan - Flag:{PlanNameFlag} - Name:{PlanName} - Course:{SelectedCourse} - Dataset:{SelectedImageSet}");
+                            $"Plan - Flag:{PlanNameFlag} - Name:{PlanName} -> In Course:{SelectedCourse} -> On Dataset:{SelectedImageSet}");
         }
 
         public string ImportWorkflowGetNewCourseName()
@@ -436,71 +353,5 @@ namespace VMS.TPS
                 return "";
             }
         }
-
-        public void ShowStructureDeletion()
-        {
-            StructureWindow structureWindow = new StructureWindow(this);
-            _window.Content = structureWindow;
-            _window.Title = $"Structure Deletion - {_context.Patient.Name}";
-
-            StructureList = new List<StructureListItem>();
-
-            foreach (var struc in _context.StructureSet.Structures)
-            {
-                try
-                {
-                    StructureList.Add(new StructureListItem
-                    {
-                        Structure = struc,
-                        HasContours = !struc.IsEmpty,
-                        ToDelete = struc.IsEmpty
-                    });
-                }
-                catch 
-                {
-                    MessageBox.Show($"Something failed for {struc.Id}");
-                }
-            }
-
-            _window.SizeToContent = SizeToContent.WidthAndHeight;
-        }
-
-        public void StructureDeletionPerformUpdates()
-        {
-            _context.Patient.BeginModifications();
-
-            try
-            {
-                var ss = _context.StructureSet;
-                var failures = new List<Structure>();
-
-                foreach (var struc in StructureList.Where(x => x.ToDelete).Select(x => x.Structure))
-                {
-                    if (ss.CanRemoveStructure(struc))
-                        ss.RemoveStructure(struc);
-                    else
-                        failures.Add(struc);
-                }
-
-                if (failures.Count > 0)
-                    MessageBox.Show($"Could not delete structures:\n\n{String.Join("\n", failures.Select(x => x.Id))}\n\nPlease delete manually", "Error Deleting Structures", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch
-            {
-                MessageBox.Show($"Something failed when deleting structures, please delete them manually");
-            }
-        }
-
-        public void MainScreen()
-        {
-            _window.Content = new MainWindow(this);
-            _window.Title = $"Dosimetry Helper - {_context.Patient.Name}";
-            _window.SizeToContent = SizeToContent.WidthAndHeight;
-        }
-
-        public void CloseWindow()
-        {
-            _window.Close();
-        }
-	}
+    }
 }

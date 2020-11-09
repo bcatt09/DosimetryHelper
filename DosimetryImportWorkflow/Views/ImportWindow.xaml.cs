@@ -13,32 +13,38 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace VMS.TPS
+namespace DosimetryHelper
 {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class ImportWindow : UserControl
+	public partial class ImportWindow : Window
 	{
-        private readonly ViewModel _vm;
+        private readonly ImportWorkflowViewModel _vm;
 
-		public ImportWindow(ViewModel viewModel)
+		public ImportWindow(ImportWorkflowViewModel viewModel, Window owner)
         {
             _vm = viewModel;
+            DataContext = viewModel;
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            SizeToContent = SizeToContent.WidthAndHeight;
+            Title = $"Import Workflow";
+            Owner = owner;
 			InitializeComponent();
+            ShowDialog();
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            _vm.MainScreen();
+            Close();
         }
 
         private void Finalize_Click(object sender, RoutedEventArgs e)
         {
-            _vm.ImportWorkflowPerformUpdates();
-            //_vm.PerformUpdatesDebug();
+            //_vm.ImportWorkflowPerformUpdates();
+            _vm.ImportWorkflowPerformUpdatesDebug();
 
-            _vm.MainScreen();
+            Close();
         }
 
         private void CoursePlanInput_GotFocus(object sender, RoutedEventArgs e)

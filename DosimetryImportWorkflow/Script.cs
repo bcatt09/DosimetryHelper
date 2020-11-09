@@ -8,6 +8,8 @@ using VMS.TPS.Common.Model.Types;
 using System.Reflection;
 using System.Windows.Input;
 
+using DosimetryHelper;
+
 [assembly: ESAPIScript(IsWriteable = true)]
 [assembly: AssemblyVersion("1.0.0")]
 
@@ -25,11 +27,10 @@ namespace VMS.TPS
 			window.Title = $"Dosimetry Helper - {context.Patient.Name}";
 			window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
-			ViewModel viewModel = new ViewModel(context, window);
+			MainViewModel viewModel = new MainViewModel(context, window);
 			MainWindow userControl = new MainWindow(viewModel);
 
 			window.Content = userControl;
-			window.DataContext = viewModel;
 			window.SizeToContent = SizeToContent.WidthAndHeight;
 		}
 	}

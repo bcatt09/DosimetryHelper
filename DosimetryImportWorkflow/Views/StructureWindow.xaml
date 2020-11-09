@@ -1,14 +1,14 @@
-﻿<UserControl x:Class="VMS.TPS.StructureWindow"
-            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:local="clr-namespace:VMS.TPS"
-            mc:Ignorable="d"
-            Height="auto" Width="auto" MinHeight="250"
-            Background="{DynamicResource MahApps.Brushes.Window.Background}">
+﻿<Window x:Class="DosimetryHelper.StructureWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:converters="clr-namespace:DosimetryHelper.Converters"
+             mc:Ignorable="d"
+             Height="auto" Width="auto" MinHeight="250"
+             Background="{DynamicResource MahApps.Brushes.Window.Background}">
 
-    <UserControl.Resources>
+    <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
@@ -16,11 +16,11 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.FlatButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <local:BooleanToYesNoConverter x:Key="BooleanToYesNoConverter"/>
-            <local:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
-            <local:StructureToIdConverter x:Key="StructureToIdConverter"/>
+            <converters:BooleanToYesNoConverter x:Key="BooleanToYesNoConverter"/>
+            <converters:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
+            <converters:StructureToIdConverter x:Key="StructureToIdConverter"/>
         </ResourceDictionary>
-    </UserControl.Resources>
+    </Window.Resources>
 
     <Grid Margin="15,15,15,0">
         <Grid.RowDefinitions>
@@ -54,58 +54,6 @@
             </DataGrid.Columns>
         </DataGrid>
         
-        <!--DataGrid ItemsSource="{Binding StructureList}" Width="400" Grid.Row="0" Grid.ColumnSpan="2" AutoGenerateColumns="False">
-            <DataGrid.Resources>
-                <Style TargetType="{x:Type DataGrid}">
-                    <Setter Property="Background" Value="Silver"/>
-                </Style>
-                <Style TargetType="{x:Type DataGridColumnHeader}">
-                    <Setter Property="Background" Value="Silver"/>
-                </Style>
-                <Style TargetType="{x:Type DataGridRow}">
-                    <Setter Property="Background" Value="WhiteSmoke"/>
-                </Style>
-            </DataGrid.Resources>
-            
-            <DataGrid.Columns>
-                <DataGridTemplateColumn Header="To Delete" Width="75" >
-                    <DataGridTemplateColumn.HeaderStyle>
-                        <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                        </Style>
-                    </DataGridTemplateColumn.HeaderStyle>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <CheckBox IsChecked="{Binding Path=ToDelete, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Structure" Width="*">
-                    <DataGridTemplateColumn.HeaderStyle>
-                        <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                        </Style>
-                    </DataGridTemplateColumn.HeaderStyle>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Path=Structure, Converter={StaticResource StructureToIdConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Has Contours" Width="100">
-                    <DataGridTemplateColumn.HeaderStyle>
-                        <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                        </Style>
-                    </DataGridTemplateColumn.HeaderStyle>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Path=HasContours, Converter={StaticResource BooleanToYesNoConverter}}" Foreground="{Binding Path=HasContours, Converter={StaticResource BooleanToColorConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-            </DataGrid.Columns>
-        </DataGrid-->
         <Button Content="Finalize" 
                 Style="{StaticResource MahApps.Styles.Button.Flat}"
                 Click="Finalize_Click" 
@@ -117,4 +65,4 @@
                 Grid.Row="1" Grid.Column="1" 
                 Margin="25,10"/>
     </Grid>
-</UserControl>
+</Window>

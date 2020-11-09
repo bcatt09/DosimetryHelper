@@ -13,56 +13,25 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace VMS.TPS
+namespace DosimetryHelper
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : UserControl
     {
-        private readonly ViewModel _vm;
+        private readonly MainViewModel _vm;
 
-        public MainWindow(ViewModel viewModel)
+        public MainWindow(MainViewModel viewModel)
         {
             _vm = viewModel;
+            DataContext = viewModel;
             InitializeComponent();
         }
 
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             _vm.CloseWindow();
-        }
-    }
-
-    public class InvalidConverterTextBlock : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if ((bool)value)
-                return Visibility.Visible;
-            else
-                return Visibility.Hidden;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public class InvalidConverterButton : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if ((bool)value)
-                return Visibility.Hidden;
-            else
-                return Visibility.Visible;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
         }
     }
 }

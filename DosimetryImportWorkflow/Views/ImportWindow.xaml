@@ -1,14 +1,15 @@
-﻿<UserControl x:Class="VMS.TPS.ImportWindow"
-			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-			 xmlns:local="clr-namespace:VMS.TPS"
-			 mc:Ignorable="d"
-			 Height="250" Width="500"
-             Background="{DynamicResource MahApps.Brushes.Window.Background}">
+﻿<Window x:Class="DosimetryHelper.ImportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:DosimetryHelper.Converters"
+		mc:Ignorable="d"
+		Height="auto" Width="500"
+        ResizeMode="NoResize"
+        Background="{DynamicResource MahApps.Brushes.Window.Background}">
     
-    <UserControl.Resources>
+    <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
@@ -16,14 +17,14 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.FlatButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <local:BooleanToYesNoConverter x:Key="BooleanToYesNoConverter"/>
-            <local:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
-            <local:StructureToIdConverter x:Key="StructureToIdConverter"/>
+            <converters:BooleanToYesNoConverter x:Key="BooleanToYesNoConverter"/>
+            <converters:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
+            <converters:StructureToIdConverter x:Key="StructureToIdConverter"/>
         </ResourceDictionary>
-    </UserControl.Resources>
-    <DockPanel VerticalAlignment="Stretch">
-        <Grid HorizontalAlignment="Center" 
-              Margin="0,20,0,10"
+    </Window.Resources>
+    <DockPanel VerticalAlignment="Center">
+        <Grid HorizontalAlignment="Center"
+              Margin="5"
               DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -31,33 +32,32 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
-            <CheckBox Grid.Column="0" Grid.Row="1"
+            <CheckBox Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"
                       IsChecked="{Binding DatasetNameFlag}"/>
-            <CheckBox Grid.Column="0" Grid.Row="2"
+            <CheckBox Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"
                       IsChecked="{Binding IsoFlag}"/>
-            <CheckBox Grid.Column="0" Grid.Row="3"
+            <CheckBox Grid.Column="0" Grid.Row="3" VerticalAlignment="Center"
                       IsChecked="{Binding CourseNameFlag}"/>
-            <CheckBox Grid.Column="0" Grid.Row="4"
+            <CheckBox Grid.Column="0" Grid.Row="4" VerticalAlignment="Center"
                       IsChecked="{Binding PlanNameFlag}"/>
-            <TextBlock Grid.Column="1" Grid.Row="0"
+            <TextBlock Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"
                        Text="Patient: "/>
-            <TextBlock Grid.Column="1" Grid.Row="1"
+            <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"
                        Text="Set Dataset Name to: "/>
-            <TextBlock Grid.Column="1" Grid.Row="2"
+            <TextBlock Grid.Column="1" Grid.Row="2" VerticalAlignment="Center"
                        Text="Move User Origin to: "/>
-            <TextBlock Grid.Column="1" Grid.Row="3"
+            <TextBlock Grid.Column="1" Grid.Row="3" VerticalAlignment="Center"
                        Text="Create Course with ID: "/>
-            <TextBlock Grid.Column="1" Grid.Row="4"
+            <TextBlock Grid.Column="1" Grid.Row="4" VerticalAlignment="Center"
                        Text="Create Plan with ID: "/>
-            <TextBlock Grid.Column="2" Grid.Row="0"
-                       Foreground="White"
-                       Text="{Binding Path=PatientName, Mode=OneWay}"/>
+            <TextBlock Grid.Column="2" Grid.Row="0" VerticalAlignment="Center"
+                       Text="{Binding Path=PatientName}"/>
             <TextBox Grid.Column="2" Grid.Row="1"
                      Foreground="Gray"
                      Name="DatasetInput" 
@@ -85,6 +85,7 @@
                      Width="200"/>
         </Grid>
         <Grid HorizontalAlignment="Center"
+              Margin="5"
               DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -115,8 +116,9 @@
                       Width="200" 
                       Visibility="{Binding SelectedCourseVisibility}"/>
         </Grid>
-        <Grid DockPanel.Dock="Bottom" 
-              Width="400">
+        <Grid Width="400"
+              Margin="5"
+              DockPanel.Dock="Bottom">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -133,4 +135,4 @@
                     Click="Cancel_Click"/>
         </Grid>
     </DockPanel>
-</UserControl>
+</Window>
