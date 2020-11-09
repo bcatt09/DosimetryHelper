@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahApps.Metro.Controls;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace DosimetryHelper
     /// <summary>
     /// Interaction logic for StructureWindow.xaml
     /// </summary>
-    public partial class StructureWindow : Window
+    public partial class StructureWindow : MetroWindow
     {
         private readonly StructureDeletionViewModel _vm;
 

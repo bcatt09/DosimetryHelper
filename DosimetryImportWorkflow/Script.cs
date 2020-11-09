@@ -26,6 +26,8 @@ namespace VMS.TPS
 			window.KeyDown += (object sender, KeyEventArgs e) => { if (e.Key == Key.Escape) window.Close(); };
 			window.Title = $"Dosimetry Helper - {context.Patient.Name}";
 			window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+			window.WindowStyle = WindowStyle.None;
+			window.ResizeMode = ResizeMode.NoResize;
 
 			MainViewModel viewModel = new MainViewModel(context, window);
 			MainWindow userControl = new MainWindow(viewModel);

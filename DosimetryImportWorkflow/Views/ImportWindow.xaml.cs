@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahApps.Metro.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace DosimetryHelper
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class ImportWindow : Window
+	public partial class ImportWindow : MetroWindow
 	{
         private readonly ImportWorkflowViewModel _vm;
 
@@ -47,24 +48,25 @@ namespace DosimetryHelper
             Close();
         }
 
-        private void CoursePlanInput_GotFocus(object sender, RoutedEventArgs e)
+        private void DatasetNameField_GotFocus(object sender, RoutedEventArgs e)
         {
             TextBox textbox = sender as TextBox;
-            if (textbox.Foreground == Brushes.Gray)
-                textbox.Foreground = Brushes.Black;
 
-            if (textbox.Text == "Enter Dataset Name")
-            {
+            // Dataset name should by default start with the scan date
+            if (textbox.Text == "")
                 textbox.Text = DateTime.Now.ToString("yyyyMMdd") + " ";
-            }
-            //if course ID is being changed, add a new course to the list of available to be selected
-            else if (textbox.Text == "Enter Course ID")
+        }
+
+        private void CourseNameField_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textbox = sender as TextBox;
+                
+            // If course ID is being changed, add a new course to the list of available to be selected
+            if (textbox.Text == "")
             {
                 _vm.Courses.ToList().Insert(0, "");
                 textbox.Text = _vm.ImportWorkflowGetNewCourseName();
             }
-            else if (textbox.Text == "Enter Plan ID")
-                textbox.Text = "";
         }
     }
 }

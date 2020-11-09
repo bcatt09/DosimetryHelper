@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,10 +11,12 @@ using VMS.TPS.Common.Model.API;
 
 namespace DosimetryHelper
 {
-    public class ImportWorkflowViewModel : ViewModelBase
+    public class ImportWorkflowViewModel : ViewModelBase, IDataErrorInfo
     {
+        #region Properties
+        // Properties
         private ScriptContext _context;
-        private Regex _regEx;
+        private Regex _courseNameRegEx;
 
         private string _patientName;
         public string PatientName
@@ -147,20 +150,34 @@ namespace DosimetryHelper
             get { return _selectedImageSetVisibility; }
             set { Set(ref _selectedImageSetVisibility, value); }
         }
-        
+
+        public string Error => "";
+
+        public string this[string columnName]
+        {
+            get
+            {
+                if (columnName == nameof(CourseName) &&
+                    !_courseNameRegEx.IsMatch(CourseName))
+                    return "Doesn't match naming conventions";
+
+                return null;
+            }
+        }
+
+        #endregion
+
         // Constructor
         public ImportWorkflowViewModel(ScriptContext context)
         {
             _context = context;
 
-            //look for Courses named "C##" or "## Rt Lung"
-            _regEx = new Regex(@"(?:C(?<index>\d+))|(?:(?<index>\d+) .*)");
+            // We will want to mainly deal with courses which follow the naming convention of "## R Lung"
+            _courseNameRegEx = new Regex(@"(?<index>\d{1,2})");
+            //_regEx = new Regex(@"(?:C(?<index>\d+))|(?:(?<index>\d+) .*)");
 
             PatientName = _context.Patient.Name;
-            DatasetName = "Enter Dataset Name";
-            Courses = _context.Patient.Courses.Where(x => _regEx.IsMatch(x.Id)).OrderByDescending(c => c.HistoryDateTime).Select(c => c.Id).ToList();
-            CourseName = "Enter Course ID";
-            PlanName = "Enter Plan ID";
+            Courses = _context.Patient.Courses.OrderByDescending(c => c.HistoryDateTime).Select(c => c.Id).ToList();
 
             //find any image sets with the same Frame Of Reference (these are probably 4D images)
             ImageSets = _context.Image.Series.Study.Series.SelectMany(series => series.Images).Where(image => image.FOR == _context.Image.FOR && image.ZSize > 1);
@@ -189,6 +206,7 @@ namespace DosimetryHelper
             SelectedImageSetVisibility = Visibility.Hidden;
         }
 
+        // Methods
         public void ImportWorkflowPerformUpdates()
         {
             _context.Patient.BeginModifications();
@@ -341,12 +359,13 @@ namespace DosimetryHelper
         {
             try
             {
-                if (_context.Patient.Courses.Count() == 0)
+                var numberedCourses = _context.Patient.Courses.Where(x => _courseNameRegEx.IsMatch(x.Id));
+                if (numberedCourses.Count() == 0)
                     return "1 ";
 
-                //find the highest index course and add one to it
-                string lastCourse = _context.Patient.Courses.Where(x => _regEx.IsMatch(x.Id)).OrderByDescending(x => Int32.Parse(_regEx.Match(x.Id).Groups["index"].Value)).First().Id;
-                return (Int32.Parse(_regEx.Match(lastCourse).Groups["index"].Value) + 1).ToString() + " ";
+                // Find the highest index course and add one to it
+                string lastCourse = numberedCourses.OrderByDescending(x => Int32.Parse(_courseNameRegEx.Match(x.Id).Groups["index"].Value)).First().Id;
+                return (Int32.Parse(_courseNameRegEx.Match(lastCourse).Groups["index"].Value) + 1).ToString() + " ";
             }
             catch
             {

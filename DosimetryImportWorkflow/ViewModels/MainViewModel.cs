@@ -11,29 +11,9 @@ namespace DosimetryHelper
 {
 	public class MainViewModel : ViewModelBase
     {
+        // Properties
         private ScriptContext _context;
-        private Regex _regEx;
-
         private Window _window;
-        public Window Window
-        {
-            get { return _window; }
-            set { Set(ref _window, value); }
-        }
-
-        private ImportWorkflowViewModel _importWorkflowViewModel;
-        public ImportWorkflowViewModel ImportWorkflowViewModel
-        {
-            get { return _importWorkflowViewModel; }
-            set { Set(ref _importWorkflowViewModel, value); }
-        }
-
-        private StructureDeletionViewModel _structureDeletionViewModel;
-        public StructureDeletionViewModel StructureDeletionViewModel
-        {
-            get { return _structureDeletionViewModel; }
-            set { Set(ref _structureDeletionViewModel, value); }
-        }
 
         // Commands
         public RelayCommand GoToImportWorkflowCommand
@@ -58,6 +38,7 @@ namespace DosimetryHelper
             GoToStructureDeletionCommand = new RelayCommand(ShowStructureDeletion, CanGoToStructureDeletion);
         }
 
+        // Methods
         public bool CanGoToImportWorkflow()
         {
             return _context.Image != null;
@@ -71,20 +52,13 @@ namespace DosimetryHelper
         public void ShowImportWorkflow()
         {
             ImportWorkflowViewModel importVM = new ImportWorkflowViewModel(_context);
-            ImportWindow importWindow = new ImportWindow(importVM, Window);
+            ImportWindow importWindow = new ImportWindow(importVM, _window);
         }
 
         public void ShowStructureDeletion()
         {
             StructureDeletionViewModel structDelVM = new StructureDeletionViewModel(_context);
-            StructureWindow structDelWindow = new StructureWindow(structDelVM, Window);
-        }
-
-        public void MainScreen()
-        {
-            _window.Content = new MainWindow(this);
-            _window.Title = $"Dosimetry Helper - {_context.Patient.Name}";
-            _window.SizeToContent = SizeToContent.WidthAndHeight;
+            StructureWindow structDelWindow = new StructureWindow(structDelVM, _window);
         }
 
         public void CloseWindow()
