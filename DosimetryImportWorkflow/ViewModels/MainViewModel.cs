@@ -6,6 +6,7 @@ using System.Windows;
 using VMS.TPS.Common.Model.API;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace DosimetryHelper
 {

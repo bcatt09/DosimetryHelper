@@ -28,18 +28,18 @@ namespace DosimetryHelper
         {
             _vm = viewModel;
             DataContext = viewModel;
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
             SizeToContent = SizeToContent.WidthAndHeight;
             Title = $"Structure Deletion";
             Owner = owner;
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
             InitializeComponent();
             ShowDialog();
         }
 
         private void Finalize_Click(object sender, RoutedEventArgs e)
         {
-            //_vm.StructureDeletionPerformUpdates();
-            Close();
+            if(_vm.StructureDeletionPerformUpdates())
+                Close();
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

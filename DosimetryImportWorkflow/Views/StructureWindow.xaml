@@ -6,8 +6,15 @@
                  xmlns:converters="clr-namespace:DosimetryHelper.Converters"
                  xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                  mc:Ignorable="d"
-                 Height="auto" Width="auto" MinHeight="250"
+                 Height="auto" Width="auto" MinHeight="250" MinWidth="650"
                  Background="{DynamicResource MahApps.Brushes.Window.Background}">
+
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+            <TextBlock Text="{Binding Path=PatientName}"
+                       VerticalAlignment="Center"/>
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
 
     <Window.Resources>
         <ResourceDictionary>
@@ -23,17 +30,28 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid Margin="15,15,15,0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="50"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <DockPanel Margin="25">
 
-        <DataGrid ItemsSource="{Binding StructureList}" Width="400" Grid.Row="0" Grid.ColumnSpan="2" AutoGenerateColumns="False">
+        <Grid Width="400"
+              Margin="0,15,0,0"
+              DockPanel.Dock="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Finalize"
+                    Style="{StaticResource MahApps.Styles.Button.Flat}"
+                    Grid.Column="0"
+                    Width="150" Height="30" 
+                    Click="Finalize_Click" />
+            <Button Content="Cancel"
+                    Style="{StaticResource MahApps.Styles.Button.Flat}"
+                    Grid.Column="1"
+                    Width="150" Height="30"
+                    Click="Cancel_Click"/>
+        </Grid>
+
+        <DataGrid ItemsSource="{Binding StructureList}" Width="400" DockPanel.Dock="Top" AutoGenerateColumns="False">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="To Delete" Width="90">
                     <DataGridTemplateColumn.CellTemplate>
@@ -54,16 +72,5 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        
-        <Button Content="Finalize" 
-                Style="{StaticResource MahApps.Styles.Button.Flat}"
-                Click="Finalize_Click" 
-                Grid.Row="1" Grid.Column="0" 
-                Margin="25,10"/>
-        <Button Content="Cancel" 
-                Style="{StaticResource MahApps.Styles.Button.Flat}"
-                Click="Cancel_Click" 
-                Grid.Row="1" Grid.Column="1" 
-                Margin="25,10"/>
-    </Grid>
+    </DockPanel>
 </mah:MetroWindow>

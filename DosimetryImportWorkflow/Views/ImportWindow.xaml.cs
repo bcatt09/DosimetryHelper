@@ -27,24 +27,16 @@ namespace DosimetryHelper
         {
             _vm = viewModel;
             DataContext = viewModel;
-            WindowStartupLocation = WindowStartupLocation.CenterScreen;
             SizeToContent = SizeToContent.WidthAndHeight;
             Title = $"Import Workflow";
             Owner = owner;
-			InitializeComponent();
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            InitializeComponent();
             ShowDialog();
         }
 
-        private void Cancel_Click(object sender, RoutedEventArgs e)
+        private void CloseWindow(object sender, RoutedEventArgs e)
         {
-            Close();
-        }
-
-        private void Finalize_Click(object sender, RoutedEventArgs e)
-        {
-            //_vm.ImportWorkflowPerformUpdates();
-            _vm.ImportWorkflowPerformUpdatesDebug();
-
             Close();
         }
 

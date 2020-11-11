@@ -59,5 +59,146 @@ namespace DosimetryHelper.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anal
+        ///Bladder
+        ///Brain
+        ///Breast
+        ///Cervix
+        ///Colon
+        ///Endometrial
+        ///Eye
+        ///GE Junction
+        ///Kidney
+        ///Liver
+        ///Lung
+        ///Lymphoma
+        ///Ovary
+        ///Pancreas
+        ///Prostate
+        ///Rectum
+        ///Sarcoma
+        ///Skin
+        ///Stomach
+        ///Testicle
+        ///Thyroid
+        ///Vagina
+        ///Vulva
+        ///
+        ///NPX
+        ///PNS
+        ///Nasal
+        ///OPX
+        ///BOT
+        ///Vlcula
+        ///Tonsil
+        ///SoftPlt
+        ///PharWl
+        ///OC
+        ///FOM
+        ///OralTng
+        ///AlvrRdg
+        ///RMT
+        ///HardPlt
+        ///Lip
+        ///SGL
+        ///Epiglts
+        ///AEFold
+        ///FVC
+        ///LX
+        ///TVC
+        ///HPX
+        ///PiriSns
+        ///PostCri
+        ///Parotid
+        ///SMG
+        ///
+        ///Mets \d\d\d\d-\d\d.
+        /// </summary>
+        internal static string CourseSiteNames {
+            get {
+                return ResourceManager.GetString("CourseSiteNames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Anal
+        ///Bladder
+        ///Brain
+        ///Brain PCI
+        ///Brain WB
+        ///Brst
+        ///ChstWal
+        ///SCV
+        ///Axilla
+        ///IMN
+        ///Pelvis
+        ///Cervix
+        ///Plvs-PA
+        ///ParArtc
+        ///Colon
+        ///Pelvis
+        ///Vagina
+        ///Plvs-PA
+        ///ParArtc
+        ///Esoph
+        ///Eye
+        ///GEJ
+        ///Kidney
+        ///Liver
+        ///Lung
+        ///Neck
+        ///Axilla
+        ///Medstnm
+        ///Hilum
+        ///ParArtc
+        ///Pelvis
+        ///Inguinal
+        ///Ovary
+        ///Panc
+        ///Pelvis
+        ///Prost/SV
+        ///Prost
+        ///Prost Bed
+        ///Pelvis
+        ///Rectum
+        ///H&amp;N
+        ///Chest
+        ///Abdmn
+        ///Pelvis
+        ///Arm
+        ///Leg
+        ///Scalp
+        ///Forehead
+        ///Eye
+        ///Nose
+        ///Cheek
+        ///Lip
+        ///Chest
+        ///Back
+        ///Arm
+        ///Leg
+        ///Stomach
+        ///Thyroid
+        ///Pelvis
+        ///Vagina
+        ///Pelvis
+        ///Vulva
+        ///
+        ///NPX
+        ///PNS
+        ///Nasal
+        ///OPX
+        ///BOT
+        ///Vlcula
+        ///Tonsil
+        ///SoftPlt [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string PlanSiteNames {
+            get {
+                return ResourceManager.GetString("PlanSiteNames", resourceCulture);
+            }
+        }
     }
 }

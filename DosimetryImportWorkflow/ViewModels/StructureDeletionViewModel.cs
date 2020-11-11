@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,14 @@ namespace DosimetryHelper
     public class StructureDeletionViewModel : ViewModelBase
     {
         private ScriptContext _context;
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
+        private string _patientName;
+        public string PatientName
+        {
+            get { return _patientName; }
+            set { Set(ref _patientName, value); }
+        }
         private List<StructureListItem> _structureList;
         public List<StructureListItem> StructureList
         {
@@ -36,6 +44,8 @@ namespace DosimetryHelper
         {
             _context = context;
 
+            PatientName = _context.Patient.Name;
+
             StructureList = new List<StructureListItem>();
 
             foreach (var struc in _context.StructureSet.Structures)
@@ -56,8 +66,18 @@ namespace DosimetryHelper
             }
         }
 
-        public void StructureDeletionPerformUpdates()
+        public bool StructureDeletionPerformUpdates()
         {
+            // Warn user if there are contoured structures to be deleted
+            var contouredStructures = StructureList.Where(x => x.ToDelete && x.HasContours).Select(x => x.Structure);
+            if (contouredStructures.Count() > 0)
+            {
+                var result = MessageBox.Show($"The following structures have contours, are you sure you want to delete them?\n\n{String.Join("\n", contouredStructures.Select(x => x.Id))}", "Confirm Structure Deletion", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.No)
+                    return false;
+            }
+
+            Log.Initialize(_context);
             _context.Patient.BeginModifications();
 
             try
@@ -80,6 +100,10 @@ namespace DosimetryHelper
             {
                 MessageBox.Show($"Something failed when deleting structures, please delete them manually");
             }
+
+            log.Info("Structure Deletion");
+            LogManager.Shutdown();
+            return true;
         }
     }
 }

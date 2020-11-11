@@ -23,17 +23,24 @@ namespace VMS.TPS
 
 		public void Execute(ScriptContext context, Window window)
 		{
-			window.KeyDown += (object sender, KeyEventArgs e) => { if (e.Key == Key.Escape) window.Close(); };
-			window.Title = $"Dosimetry Helper - {context.Patient.Name}";
-			window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-			window.WindowStyle = WindowStyle.None;
-			window.ResizeMode = ResizeMode.NoResize;
+			try
+			{
+				window.KeyDown += (object sender, KeyEventArgs e) => { if (e.Key == Key.Escape) window.Close(); };
+				window.Title = $"Dosimetry Helper - {context.Patient.Name}";
+				window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+				window.WindowStyle = WindowStyle.None;
+				window.ResizeMode = ResizeMode.NoResize;
 
-			MainViewModel viewModel = new MainViewModel(context, window);
-			MainWindow userControl = new MainWindow(viewModel);
+				MainViewModel viewModel = new MainViewModel(context, window);
+				MainWindow userControl = new MainWindow(viewModel);
 
-			window.Content = userControl;
-			window.SizeToContent = SizeToContent.WidthAndHeight;
+				window.Content = userControl;
+				window.SizeToContent = SizeToContent.WidthAndHeight;
+			}
+			catch (Exception e)
+            {
+				MessageBox.Show($"{e.Message}\n\n\n{e.StackTrace}", "big one");
+            }
 		}
 	}
 }
