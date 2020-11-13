@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using VMS.TPS.Common.Model.API;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
-using MahApps.Metro.Controls.Dialogs;
 
 namespace DosimetryHelper
 {
@@ -29,6 +27,12 @@ namespace DosimetryHelper
             private set;
         }
 
+        public RelayCommand GoToAddSetupFieldsCommand
+        {
+            get;
+            private set;
+        }
+
         // Constructor
         public MainViewModel(ScriptContext context, Window window)
         {
@@ -37,17 +41,45 @@ namespace DosimetryHelper
 
             GoToImportWorkflowCommand = new RelayCommand(ShowImportWorkflow, CanGoToImportWorkflow);
             GoToStructureDeletionCommand = new RelayCommand(ShowStructureDeletion, CanGoToStructureDeletion);
+            GoToAddSetupFieldsCommand = new RelayCommand(ShowAddSetupFields, CanGoToAddSetupFields);
         }
 
         // Methods
         public bool CanGoToImportWorkflow()
         {
-            return _context.Image != null;
+            try
+            {
+                return _context.Image != null;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public bool CanGoToStructureDeletion()
         {
-            return _context.StructureSet != null;
+            try
+            {
+                return _context.StructureSet != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool CanGoToAddSetupFields()
+        {
+            try
+            {
+                return _context.PlanSetup.Beams.Where(x => !x.IsSetupField).Count() > 0 &&
+                       _context.PlanSetup.Beams.Select(x => x.IsocenterPosition).Distinct().Count() == 1;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public void ShowImportWorkflow()
@@ -60,6 +92,12 @@ namespace DosimetryHelper
         {
             StructureDeletionViewModel structDelVM = new StructureDeletionViewModel(_context);
             StructureWindow structDelWindow = new StructureWindow(structDelVM, _window);
+        }
+
+        public void ShowAddSetupFields()
+        {
+            SetupFieldsViewModel structDelVM = new SetupFieldsViewModel(_context);
+            SetupFieldsWindow setupFieldsWindow = new SetupFieldsWindow(structDelVM, _window);
         }
 
         public void CloseWindow()

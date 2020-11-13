@@ -56,7 +56,7 @@ namespace DosimetryHelper
             // If course ID is being changed, add a new course to the list of available to be selected
             if (textbox.Text == "")
             {
-                _vm.Courses.ToList().Insert(0, "");
+                _vm.CourseList.ToList().Insert(0, "");
                 textbox.Text = _vm.ImportWorkflowGetNewCourseName();
             }
         }

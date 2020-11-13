@@ -20,11 +20,13 @@
             <converters:FalseToStringConverter x:Key="falseToStringConverter"/>
             <sys:String x:Key="importWorkflowValidationFailure">Please load an image set before running</sys:String>
             <sys:String x:Key="structureDeletionValidationFailure">Please load a plan or structure set before running</sys:String>
+            <sys:String x:Key="setupFieldsValidationFailure">Current plan must have at least one field and only one isocenter before adding setup fields</sys:String>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid Margin="5,10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
@@ -46,10 +48,18 @@
                 ToolTipService.ShowOnDisabled="True"
                 Margin="50,8" 
                 Grid.Row="1"/>
+        <Button Content="Add Setup Fields" 
+                Style="{StaticResource MahApps.Styles.Button.Flat}"
+                Command="{Binding GoToAddSetupFieldsCommand}"
+                Name="setupFieldsButton"
+                ToolTip="{Binding Path=IsEnabled, ElementName=setupFieldsButton, Converter={StaticResource falseToStringConverter}, ConverterParameter={StaticResource setupFieldsValidationFailure}}"
+                ToolTipService.ShowOnDisabled="True"
+                Margin="50,8" 
+                Grid.Row="2"/>
         <Button Content="Close" 
                 Style="{StaticResource MahApps.Styles.Button.Flat}"
                 Click="Close_Click" 
                 Margin="50,8" 
-                Grid.Row="2"/>
+                Grid.Row="3"/>
     </Grid>
 </UserControl>

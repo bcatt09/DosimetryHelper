@@ -1,0 +1,188 @@
+﻿<mah:MetroWindow x:Class="DosimetryHelper.SetupFieldsWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:converters="clr-namespace:DosimetryHelper.Converters"
+                 xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                 xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                 xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+		         mc:Ignorable="d"
+		         Height="auto" Width="auto"
+                 ResizeMode="CanMinimize"
+                 Background="{DynamicResource MahApps.Brushes.Window.Background}">
+    
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+            <TextBlock Text="{Binding Path=PatientName}"
+                       VerticalAlignment="Center"/>
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.FlatButton.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:BooleanToYesNoConverter x:Key="BooleanToYesNoConverter"/>
+            <converters:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
+            <converters:StructureToIdConverter x:Key="StructureToIdConverter"/>
+            <converters:FalseToStringConverter x:Key="falseToStringConverter"/>
+            <sys:String x:Key="finalizeFailure">Specify suffixes if making </sys:String>
+        </ResourceDictionary>
+    </Window.Resources>
+    <DockPanel VerticalAlignment="Center"
+               Margin="20"
+               Width="auto"
+               MinWidth="350" MinHeight="250">
+        <Grid DockPanel.Dock="Top"
+              HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*" MinWidth="15"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Column="2" Grid.ColumnSpan="3" 
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center">
+                <TextBlock Text="Patient Orientation:"
+                           Margin="0,0,5,0"/>
+                <TextBlock Text="{Binding PatientOrientation}"
+                           Foreground="{DynamicResource MahApps.Brushes.Accent}"/>
+            </StackPanel>
+            
+            <!--#region CBCT-->
+            <mah:Underline Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Margin="0,0,35,0">
+                <Label Content="CBCT Fields:"/>
+            </mah:Underline>
+
+            <CheckBox Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"
+                      IsTabStop="False"
+                      IsChecked="{Binding CbctFlag}"/>
+            <TextBlock Grid.Column="1" Grid.Row="2" VerticalAlignment="Center"
+                       Margin="5"
+                       Text="CBCT"/>
+            <!--#endregion-->
+
+            <!--#region kV/MV-->
+
+            <mah:Underline Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="3" Margin="0,0,35,0">
+                <Label Content="kV/MV Fields:"/>
+            </mah:Underline>
+            <DockPanel Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="3">
+                <TextBox Width="50"
+                         Text="{Binding Suffix2, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" 
+                         Visibility="{Binding SuffixesVisibility}"
+                         DockPanel.Dock="Right"
+                         MaxLength="5"/>
+                <TextBox Width="50"
+                         Text="{Binding Suffix1, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}" 
+                         Visibility="{Binding SuffixesVisibility}"
+                         DockPanel.Dock="Right"
+                         Margin="0,0,10,0"
+                         MaxLength="5"/>
+                <TextBlock Text="Suffixes:"
+                           Visibility="{Binding SuffixesVisibility}"
+                           DockPanel.Dock="Right"
+                           Margin="0,0,5,0"
+                           VerticalAlignment="Center"/>
+                <TextBlock Text=""/>
+            </DockPanel>
+
+            <CheckBox Grid.Column="0" Grid.Row="4" VerticalAlignment="Center"
+                      IsTabStop="False"
+                      IsChecked="{Binding MvKvPairFlag}"/>
+            <TextBlock Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="5" VerticalAlignment="Center"
+                       Margin="5"
+                       Text="Add 2 fields at each angle (both kV and MV)"/>
+
+            <CheckBox Grid.Column="0" Grid.Row="5" VerticalAlignment="Center"
+                      IsTabStop="False"
+                      IsChecked="{Binding ApRtLatFlag}"
+                      IsThreeState="True"
+                      Click="CheckBox_Clicked"/>
+            <TextBlock Grid.Column="1" Grid.Row="5" VerticalAlignment="Center"
+                       Margin="5"
+                       Text="AP/Rt Lat Pair"/>
+
+            <CheckBox Grid.Column="3" Grid.Row="5" VerticalAlignment="Center"
+                      IsTabStop="False"
+                      IsChecked="{Binding PaLtLatFlag}"
+                      IsThreeState="True"
+                      Click="CheckBox_Clicked"/>
+            <TextBlock Grid.Column="4" Grid.Row="5" VerticalAlignment="Center"
+                       Margin="5"
+                       Text="PA/Lt Lat Pair"/>
+
+            <CheckBox Grid.Column="0" Grid.Row="6" VerticalAlignment="Center"
+                      IsTabStop="False"
+                      IsChecked="{Binding ApFlag}"/>
+            <TextBlock Grid.Column="1" Grid.Row="6" VerticalAlignment="Center"
+                       Margin="5"
+                       Text="AP"/>
+
+            <CheckBox Grid.Column="0" Grid.Row="7" VerticalAlignment="Center"
+                      IsTabStop="False"
+                      IsChecked="{Binding RtLatFlag}"/>
+            <TextBlock Grid.Column="1" Grid.Row="7" VerticalAlignment="Center"
+                       Margin="5"
+                       Text="Rt Lat"/>
+
+            <CheckBox Grid.Column="3" Grid.Row="6" VerticalAlignment="Center"
+                      IsTabStop="False"
+                      IsChecked="{Binding PaFlag}"/>
+            <TextBlock Grid.Column="4" Grid.Row="6" VerticalAlignment="Center"
+                       Margin="5"
+                       Text="PA"/>
+
+            <CheckBox Grid.Column="3" Grid.Row="7" VerticalAlignment="Center"
+                      IsTabStop="False"
+                      IsChecked="{Binding LtLatFlag}"/>
+            <TextBlock Grid.Column="4" Grid.Row="7" VerticalAlignment="Center"
+                       Margin="5"
+                       Text="Lt Lat"/>
+
+
+            <!--#endregion-->
+        </Grid>
+        <Grid Width="400"
+              Margin="5,5,5,15"
+              VerticalAlignment="Bottom"
+              DockPanel.Dock="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Finalize"
+                    Style="{StaticResource MahApps.Styles.Button.Flat}"
+                    Grid.Column="0"
+                    Width="150" Height="30" 
+                    Command="{Binding FinalizeSetupFieldsCommand}"
+                    Name="finalizeButton"
+                    ToolTip="{Binding Path=IsEnabled, ElementName=finalizeButton, Converter={StaticResource falseToStringConverter}, ConverterParameter={StaticResource finalizeFailure}}"
+                    ToolTipService.ShowOnDisabled="True"
+                    Click="CloseWindow" />
+            <Button Content="Cancel"
+                    Style="{StaticResource MahApps.Styles.Button.Flat}"
+                    Grid.Column="1"
+                    Width="150" Height="30"
+                    Click="CloseWindow"/>
+        </Grid>
+    </DockPanel>
+</mah:MetroWindow>

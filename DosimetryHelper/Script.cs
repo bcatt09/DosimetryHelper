@@ -11,7 +11,7 @@ using System.Windows.Input;
 using DosimetryHelper;
 
 [assembly: ESAPIScript(IsWriteable = true)]
-[assembly: AssemblyVersion("1.0.0")]
+[assembly: AssemblyVersion("1.1.0")]
 
 namespace VMS.TPS
 {
@@ -39,7 +39,7 @@ namespace VMS.TPS
 			}
 			catch (Exception e)
             {
-				MessageBox.Show($"{e.Message}\n\n\n{e.StackTrace}", "big one");
+				MessageBox.Show($"{e.Message}\n\n{e.StackTrace}", "Well this is awkward...");
             }
 		}
 	}
