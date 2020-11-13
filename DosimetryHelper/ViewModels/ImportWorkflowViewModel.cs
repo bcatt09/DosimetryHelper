@@ -160,7 +160,20 @@ namespace DosimetryHelper
         public bool DatasetNameFlag
         {
             get { return _datasetNameFlag; }
-            set { Set(ref _datasetNameFlag, value); }
+            set 
+            { 
+                Set(ref _datasetNameFlag, value);
+                if (!DatasetNameFlag)
+                {
+                    ImageSetList = _context.Image.Series.Study.Series.SelectMany(series => series.Images).Where(image => image.FOR == _context.Image.FOR && image.ZSize > 1).Select(x => new DatasetComboBoxItem(x, x.Id));
+                    SelectedImageSet = _context.Image;
+                }
+                else
+                {
+                    ImageSetList = _context.Image.Series.Study.Series.SelectMany(series => series.Images).Where(image => image.FOR == _context.Image.FOR && image.ZSize > 1).Select(x => new DatasetComboBoxItem(x, x == _context.Image ? DatasetName : x.Id));
+                    SelectedImageSet = _context.Image;
+                }
+            }
         }
         private bool _courseIdFlag;
         public bool CourseIdFlag
@@ -335,6 +348,7 @@ namespace DosimetryHelper
 
             PatientName = _context.Patient.Name;
             CourseList = _context.Patient.Courses.OrderByDescending(c => c.HistoryDateTime).Select(c => c.Id).ToList();
+            SelectedCourse = CourseList.FirstOrDefault();
 
             MachineList = GetMachineHelper.GetMachineList(_context.Patient.Hospital.Id);
             SelectedMachine = MachineList.First();
