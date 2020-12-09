@@ -23,7 +23,7 @@ namespace DosimetryHelper
             var logfile = new NLog.Targets.FileTarget("logfile")
             {
                 FileName = GetDefaultLogPath(),
-                Layout = "${date:format=HH\\:mm\\:ss:padding=-10:fixedlength=true} ${gdc:item=Script:padding=-15:fixedlength=true} ${level:uppercase=true:padding=-10:fixedlength=true} ${gdc:item=User:padding=-35:fixedlength=true} ${gdc:item=Patient:padding=-35:fixedlength=true} ${message}${onexception:${newline}  ${exception:format=Message,StackTrace:separator=\r\n}}"
+                Layout = "${date:format=HH\\:mm\\:ss:padding=-10:fixedlength=true} ${gdc:item=Script:padding=-20:fixedlength=true} ${level:uppercase=true:padding=-10:fixedlength=true} ${gdc:item=User:padding=-35:fixedlength=true} ${gdc:item=Patient:padding=-35:fixedlength=true} ${message}${onexception:${newline}  ${exception:format=Message,StackTrace:separator=\r\n}}"
             };
 
             // Rules for mapping loggers to targets            
@@ -37,7 +37,7 @@ namespace DosimetryHelper
             GlobalDiagnosticsContext.Set("Patient", $"{context.Patient.LastName}, {context.Patient.FirstName} ({context.Patient.Id})");
 
             // Clear the log every day and save yesterday's log in case there were errors that need to be looked into
-            if (DateTime.Now.Day != File.GetLastWriteTime(GetDefaultLogPath()).Day)
+            if (File.Exists(GetDefaultLogPath()) && DateTime.Now.Day != File.GetLastWriteTime(GetDefaultLogPath()).Day)
             {
                 File.Delete(GetOldLogPath());
                 File.Copy(GetDefaultLogPath(), GetOldLogPath());
