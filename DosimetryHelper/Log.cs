@@ -32,7 +32,7 @@ namespace DosimetryHelper
             // Apply config           
             LogManager.Configuration = config;
 
-            GlobalDiagnosticsContext.Set("Script", "DosimetryHelper");
+            GlobalDiagnosticsContext.Set("Script", "Dosimetry Helper");
             GlobalDiagnosticsContext.Set("User", $"{context.CurrentUser.Name} ({context.CurrentUser.Id})");
             GlobalDiagnosticsContext.Set("Patient", $"{context.Patient.LastName}, {context.Patient.FirstName} ({context.Patient.Id})");
 
