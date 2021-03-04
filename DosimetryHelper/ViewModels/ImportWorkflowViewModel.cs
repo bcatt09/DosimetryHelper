@@ -24,6 +24,7 @@ namespace DosimetryHelper
         private IEnumerable<Regex> _planIdRegexes;
         private IEnumerable<Regex> _planNameRegexes;
         private IEnumerable<Regex> _referencePointRegexes;
+        private IEnumerable<Course> _existingCourses;
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
         // Helper Regexes
         private Regex _courseNumberRegex;
@@ -200,6 +201,7 @@ namespace DosimetryHelper
                 AddDummyFieldFlag = PlanIdFlag;
                 PlanNameFlag = PlanIdFlag;
                 ReferencePointNameFlag = PlanIdFlag;
+                RaisePropertyChanged(() => PlanId);
                 UpdateVisiblities();
             }
         }
@@ -257,6 +259,15 @@ namespace DosimetryHelper
             {
                 if (columnName == nameof(CourseId))
                 {
+                    // Course ID already exists
+                    if (_existingCourses.Select(x => x.Id).Contains(CourseId))
+                        return "Course ID already exists, uncheck \"Create Course\"";
+
+                    // Course ends with a space
+                    if (!String.IsNullOrEmpty(CourseId) && CourseId.EndsWith(" "))
+                        return "Remove any trailing spaces";
+
+                    // Course ID doesn't match naming conventions
                     bool resultFound = false;
                     foreach (var regex in _courseIdRegexes)
                     {
@@ -272,6 +283,10 @@ namespace DosimetryHelper
 
                 else if (columnName == nameof(PlanId))
                 {
+                    // Plan ID not entered
+                    if (PlanIdFlag && String.IsNullOrEmpty(PlanId))
+                        return "Please enter a Plan ID";
+
                     bool resultFound = false;
                     foreach (var regex in _planIdRegexes)
                     {
@@ -319,6 +334,8 @@ namespace DosimetryHelper
                 {
                     if (String.IsNullOrEmpty(SelectedCourse))
                         return "Please select a course";
+                    if (_existingCourses.Where(x => x.Id == SelectedCourse).First().IsCompleted())
+                        return "Course Status is 'Completed'";
                 }
 
                 return null;
@@ -336,6 +353,7 @@ namespace DosimetryHelper
         public ImportWorkflowViewModel(ScriptContext context)
         {
             _context = context;
+            _existingCourses = context.Patient.Courses;
             FinalizeImportWorkflowCommand = new RelayCommand(ImportWorkflowPerformUpdates, CanPerformUpdates);
 
             // Regular expressions for naming convention validation
@@ -374,13 +392,21 @@ namespace DosimetryHelper
         // Methods
         public bool CanPerformUpdates()
         {
-            if (PlanNameFlag)
-            {
-                if (!String.IsNullOrEmpty(SelectedCourse))
-                    return true;
-                else
-                    return false;
-            }
+            // Course is not selected
+            if (String.IsNullOrEmpty(SelectedCourse))
+                return false;
+            // Course ID already exists
+            else if (CourseIdFlag && _existingCourses.Select(x => x.Id).Contains(CourseId))
+                return false;
+            // Course ID has trailing spaces
+            else if (!String.IsNullOrEmpty(CourseId) && CourseId.EndsWith(" "))
+                return false;
+            // Course is completed
+            else if (!CourseIdFlag && _existingCourses.Where(x => x.Id == SelectedCourse).First().IsCompleted())
+                return false;
+            // Plan ID not entered and a Plan is being created
+            else if (PlanIdFlag && String.IsNullOrEmpty(PlanId))
+                return false;
             else
                 return true;
         }
@@ -456,7 +482,7 @@ namespace DosimetryHelper
             {
                 try
                 {
-                    //add new course if possible
+                    // Add new course if possible
                     if (_context.Patient.CanAddCourse())
                     {
                         course = _context.Patient.AddCourse();

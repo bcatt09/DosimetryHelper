@@ -31,7 +31,7 @@
             <converters:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
             <converters:StructureToIdConverter x:Key="StructureToIdConverter"/>
             <converters:FalseToStringConverter x:Key="falseToStringConverter"/>
-            <sys:String x:Key="finalizeFailure">Make sure a course is selected if you are creating a new plan</sys:String>
+            <sys:String x:Key="finalizeFailure">Please verify any errors</sys:String>
         </ResourceDictionary>
     </Window.Resources>
     <DockPanel VerticalAlignment="Center"
