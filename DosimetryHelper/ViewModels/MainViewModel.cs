@@ -20,6 +20,11 @@ namespace DosimetryHelper
             get;
             private set;
         }
+        public RelayCommand GoToImageRenamingCommand
+        {
+            get;
+            private set;
+        }
 
         public RelayCommand GoToStructureDeletionCommand
         {
@@ -40,6 +45,7 @@ namespace DosimetryHelper
             _context = context;
 
             GoToImportWorkflowCommand = new RelayCommand(ShowImportWorkflow, CanGoToImportWorkflow);
+            GoToImageRenamingCommand = new RelayCommand(ShowImageRenaming, CanGoToImageRenaming);
             GoToStructureDeletionCommand = new RelayCommand(ShowStructureDeletion, CanGoToStructureDeletion);
             GoToAddSetupFieldsCommand = new RelayCommand(ShowAddSetupFields, CanGoToAddSetupFields);
         }
@@ -50,6 +56,18 @@ namespace DosimetryHelper
             try
             {
                 return _context.Image != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public bool CanGoToImageRenaming()
+        {
+            try
+            {
+                return _context.Patient.Studies.Count() > 0;
             }
             catch
             {
@@ -86,6 +104,12 @@ namespace DosimetryHelper
         {
             ImportWorkflowViewModel importVM = new ImportWorkflowViewModel(_context);
             ImportWindow importWindow = new ImportWindow(importVM, _window);
+        }
+
+        public void ShowImageRenaming()
+        {
+            ImageRenamingViewModel imageRenameVM = new ImageRenamingViewModel(_context);
+            ImageRenamingWindow imageRenameWindow = new ImageRenamingWindow(imageRenameVM, _window);
         }
 
         public void ShowStructureDeletion()
