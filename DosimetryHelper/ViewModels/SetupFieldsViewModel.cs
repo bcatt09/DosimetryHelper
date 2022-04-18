@@ -250,7 +250,7 @@ namespace DosimetryHelper
 
             ExternalPlanSetup plan = _context.PlanSetup as ExternalPlanSetup;
             Beam beam = plan.Beams.FirstOrDefault();
-            VRect<double> jaws = new VRect<double>(-50, -50, 50, 50);
+            VRect<double> jaws = new VRect<double>(-100, -100, 100, 100);
             ExternalBeamMachineParameters machineParams = new ExternalBeamMachineParameters(beam.TreatmentUnit.Id, beam.EnergyModeDisplayName, beam.DoseRate, "STATIC", "");
 
             int ap, pa, rtLat, ltLat;
