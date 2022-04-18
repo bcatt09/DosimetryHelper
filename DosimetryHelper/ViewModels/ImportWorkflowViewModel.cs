@@ -25,6 +25,8 @@ namespace DosimetryHelper
         private IEnumerable<Regex> _planNameRegexes;
         private IEnumerable<Regex> _referencePointRegexes;
         private IEnumerable<Course> _existingCourses;
+        private IEnumerable<PlanSetup> _existingPlans;
+        private IEnumerable<ReferencePoint> _existingReferencePoints;
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
         // Helper Regexes
         private Regex _courseNumberRegex;
@@ -254,7 +256,6 @@ namespace DosimetryHelper
 
         public string this[string columnName]
         {
-            // TODO: Add leading/trailing spaces checks
             get
             {
                 if (columnName == nameof(CourseId))
@@ -262,6 +263,10 @@ namespace DosimetryHelper
                     // Course ID already exists
                     if (_existingCourses.Select(x => x.Id).Contains(CourseId))
                         return "Course ID already exists, uncheck \"Create Course\"";
+
+                    // Course starts with a space
+                    if (!String.IsNullOrEmpty(CourseId) && CourseId.StartsWith(" "))
+                        return "Remove any leading spaces";
 
                     // Course ends with a space
                     if (!String.IsNullOrEmpty(CourseId) && CourseId.EndsWith(" "))
@@ -287,6 +292,19 @@ namespace DosimetryHelper
                     if (PlanIdFlag && String.IsNullOrEmpty(PlanId))
                         return "Please enter a Plan ID";
 
+                    // Plan ID starts with a space
+                    if (!String.IsNullOrEmpty(PlanId) && PlanId.StartsWith(" "))
+                        return "Remove any leading spaces";
+
+                    // Plan ID ends with a space
+                    if (!String.IsNullOrEmpty(PlanId) && PlanId.EndsWith(" "))
+                        return "Remove any trailing spaces";
+
+                    // Plan ID already exists in selected Course
+                    if (_existingPlans.Count(x => x.Course.Id == SelectedCourse && x.Id == PlanId) > 0)
+                        return "Plan ID already exists in the selected Course";
+
+                    // Plan ID doesn't match naming conventions
                     bool resultFound = false;
                     foreach (var regex in _planIdRegexes)
                     {
@@ -302,6 +320,15 @@ namespace DosimetryHelper
 
                 else if (columnName == nameof(PlanName))
                 {
+                    // Plan Name starts with a space
+                    if (!String.IsNullOrEmpty(PlanName) && PlanName.StartsWith(" "))
+                        return "Remove any leading spaces";
+
+                    // Plan Name ends with a space
+                    if (!String.IsNullOrEmpty(PlanName) && PlanName.EndsWith(" "))
+                        return "Remove any trailing spaces";
+
+                    // Plan Name doesn't match naming conventions
                     bool resultFound = false;
                     foreach (var regex in _planNameRegexes)
                     {
@@ -317,6 +344,19 @@ namespace DosimetryHelper
 
                 else if (columnName == nameof(ReferencePointName))
                 {
+                    // Reference Point Name starts with a space
+                    if (!String.IsNullOrEmpty(ReferencePointName) && ReferencePointName.StartsWith(" "))
+                        return "Remove any leading spaces";
+
+                    // Reference Point Name ends with a space
+                    if (!String.IsNullOrEmpty(ReferencePointName) && ReferencePointName.EndsWith(" "))
+                        return "Remove any trailing spaces";
+
+                    // Reference Point Name already exists
+                    if (_existingReferencePoints.Select(x => x.Id).Contains(ReferencePointName))
+                        return "Reference Point name already exists";
+
+                    // Reference Point Name doesn't match naming conventions
                     bool resultFound = false;
                     foreach (var regex in _planNameRegexes)
                     {
@@ -354,6 +394,8 @@ namespace DosimetryHelper
         {
             _context = context;
             _existingCourses = context.Patient.Courses;
+            _existingPlans = context.Patient.Courses.SelectMany(x => x.PlanSetups);
+            _existingReferencePoints = context.Patient.ReferencePoints;
             FinalizeImportWorkflowCommand = new RelayCommand(ImportWorkflowPerformUpdates, CanPerformUpdates);
 
             // Regular expressions for naming convention validation
@@ -398,14 +440,29 @@ namespace DosimetryHelper
             // Course ID already exists
             else if (CourseIdFlag && _existingCourses.Select(x => x.Id).Contains(CourseId))
                 return false;
-            // Course ID has trailing spaces
-            else if (!String.IsNullOrEmpty(CourseId) && CourseId.EndsWith(" "))
-                return false;
             // Course is completed
             else if (!CourseIdFlag && _existingCourses.Where(x => x.Id == SelectedCourse).First().IsCompleted())
                 return false;
             // Plan ID not entered and a Plan is being created
             else if (PlanIdFlag && String.IsNullOrEmpty(PlanId))
+                return false;
+            // Plan ID already exists in selected Course
+            else if (_existingPlans.Count(x => x.Course.Id == SelectedCourse && x.Id == PlanId) > 0)
+                return false;
+            // Reference Point Name already exists
+            if (_existingReferencePoints.Select(x => x.Id).Contains(ReferencePointName))
+                return false;
+            // Course ID has leading/trailing spaces
+            else if (!String.IsNullOrEmpty(CourseId) && (CourseId.EndsWith(" ") || CourseId.StartsWith(" ")))
+                return false;
+            // Plan ID has leading/trailing spaces
+            else if (!String.IsNullOrEmpty(PlanId) && (PlanId.EndsWith(" ") || PlanId.StartsWith(" ")))
+                return false;
+            // Plan Name has leading/trailing spaces
+            else if (!String.IsNullOrEmpty(PlanName) && (PlanName.EndsWith(" ") || PlanName.StartsWith(" ")))
+                return false;
+            // Reference Point Name has leading/trailing spaces
+            else if (!String.IsNullOrEmpty(ReferencePointName) && (ReferencePointName.EndsWith(" ") || ReferencePointName.StartsWith(" ")))
                 return false;
             else
                 return true;
