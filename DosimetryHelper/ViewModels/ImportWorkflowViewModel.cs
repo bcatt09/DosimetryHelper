@@ -27,6 +27,7 @@ namespace DosimetryHelper
         private IEnumerable<Course> _existingCourses;
         private IEnumerable<PlanSetup> _existingPlans;
         private IEnumerable<ReferencePoint> _existingReferencePoints;
+        private IEnumerable<Image> _existingImages;
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
         // Helper Regexes
         private Regex _courseNumberRegex;
@@ -258,10 +259,38 @@ namespace DosimetryHelper
         {
             get
             {
-                if (columnName == nameof(CourseId))
+                // Dataset Name validation
+                if (columnName == nameof(DatasetName))
+                {
+                    // Dataset Name not entered
+                    if (DatasetNameFlag && String.IsNullOrEmpty(DatasetName))
+                        return "Please enter a Dataset Name";
+
+                    // Dataset Name starts with a space
+                    if (!String.IsNullOrEmpty(DatasetName) && DatasetName.StartsWith(" "))
+                        return "Remove any leading spaces";
+
+                    // Dataset Name ends with a space
+                    if (!String.IsNullOrEmpty(DatasetName) && DatasetName.EndsWith(" "))
+                        return "Remove any trailing spaces";
+
+                    // Dataset Name already exists in Series
+                    if (_existingImages.Count(x => x.Id.ToLower() == DatasetName.ToLower() && x.Series.Id == _context.Image.Series.Id) > 0)
+                        return "Dataset Name already exists in this Series";
+
+                    // Dataset Name already exists in Patient
+                    if (_existingImages.Count(x => x.Id.ToLower() == DatasetName.ToLower()) > 0)
+                        return "Dataset Name already exists in this Patient";
+
+                    // Dataset Name doesn't follow date format
+                    if (!DatasetName.StartsWith(DateTime.Now.ToString("yyyyMMdd")))
+                        return $"Doesn't follow date naming format (start with {DateTime.Now:yyyyMMdd})";
+                }
+                // Course ID validation
+                else if (columnName == nameof(CourseId))
                 {
                     // Course ID already exists
-                    if (_existingCourses.Select(x => x.Id).Contains(CourseId))
+                    if (_existingCourses.Select(x => x.Id.ToLower()).Contains(CourseId.ToLower()))
                         return "Course ID already exists, uncheck \"Create Course\"";
 
                     // Course starts with a space
@@ -285,7 +314,7 @@ namespace DosimetryHelper
                     if (!resultFound)
                         return "Doesn't match naming conventions";
                 }
-
+                // Plan ID validation
                 else if (columnName == nameof(PlanId))
                 {
                     // Plan ID not entered
@@ -301,7 +330,7 @@ namespace DosimetryHelper
                         return "Remove any trailing spaces";
 
                     // Plan ID already exists in selected Course
-                    if (_existingPlans.Count(x => x.Course.Id == SelectedCourse && x.Id == PlanId) > 0)
+                    if (_existingPlans.Count(x => x.Course.Id == SelectedCourse && x.Id.ToLower() == PlanId.ToLower()) > 0)
                         return "Plan ID already exists in the selected Course";
 
                     // Plan ID doesn't match naming conventions
@@ -317,7 +346,7 @@ namespace DosimetryHelper
                     if (!resultFound)
                         return "Doesn't match naming conventions";
                 }
-
+                // Plan Name validation
                 else if (columnName == nameof(PlanName))
                 {
                     // Plan Name starts with a space
@@ -341,7 +370,7 @@ namespace DosimetryHelper
                     if (!resultFound)
                         return "Doesn't match naming conventions";
                 }
-
+                // Reference Point Name validation
                 else if (columnName == nameof(ReferencePointName))
                 {
                     // Reference Point Name starts with a space
@@ -353,7 +382,7 @@ namespace DosimetryHelper
                         return "Remove any trailing spaces";
 
                     // Reference Point Name already exists
-                    if (_existingReferencePoints.Select(x => x.Id).Contains(ReferencePointName))
+                    if (_existingReferencePoints.Select(x => x.Id.ToLower()).Contains(ReferencePointName.ToLower()))
                         return "Reference Point name already exists";
 
                     // Reference Point Name doesn't match naming conventions
@@ -369,7 +398,7 @@ namespace DosimetryHelper
                     if (!resultFound)
                         return "Doesn't match naming conventions";
                 }
-
+                // Selected Course validation
                 else if (columnName == nameof(SelectedCourse))
                 {
                     if (String.IsNullOrEmpty(SelectedCourse))
@@ -383,11 +412,7 @@ namespace DosimetryHelper
         }
 
         // Commands
-        public RelayCommand FinalizeImportWorkflowCommand
-        {
-            get;
-            private set;
-        }
+        public RelayCommand FinalizeImportWorkflowCommand { get; private set; }
 
         // Constructor
         public ImportWorkflowViewModel(ScriptContext context)
@@ -396,6 +421,7 @@ namespace DosimetryHelper
             _existingCourses = context.Patient.Courses;
             _existingPlans = context.Patient.Courses.SelectMany(x => x.PlanSetups);
             _existingReferencePoints = context.Patient.ReferencePoints;
+            _existingImages = context.Patient.Studies.SelectMany(x => x.Series.SelectMany(y => y.Images.Where(i => i.ZSize > 1)));
             FinalizeImportWorkflowCommand = new RelayCommand(ImportWorkflowPerformUpdates, CanPerformUpdates);
 
             // Regular expressions for naming convention validation
@@ -434,23 +460,29 @@ namespace DosimetryHelper
         // Methods
         public bool CanPerformUpdates()
         {
+            // Dataset Name has leading/trailing spaces
+            if (!String.IsNullOrEmpty(DatasetName) && (DatasetName.EndsWith(" ") || DatasetName.StartsWith(" ")))
+                return false;
+            // Dataset Name exists in Series
+            else if (!String.IsNullOrEmpty(DatasetName) && _existingImages.Count(x => x.Id.ToLower() == DatasetName.ToLower() && x.Series.Id == _context.Image.Series.Id) > 0)
+                return false;
             // Course is not selected
             if (String.IsNullOrEmpty(SelectedCourse))
                 return false;
             // Course ID already exists
-            else if (CourseIdFlag && _existingCourses.Select(x => x.Id).Contains(CourseId))
+            else if (CourseIdFlag && _existingCourses.Select(x => x.Id.ToLower()).Contains(CourseId.ToLower()))
                 return false;
             // Course is completed
-            else if (!CourseIdFlag && _existingCourses.Where(x => x.Id == SelectedCourse).First().IsCompleted())
+            else if (!CourseIdFlag && !String.IsNullOrEmpty(SelectedCourse) && _existingCourses.FirstOrDefault(x => x.Id == SelectedCourse).IsCompleted())
                 return false;
             // Plan ID not entered and a Plan is being created
             else if (PlanIdFlag && String.IsNullOrEmpty(PlanId))
                 return false;
             // Plan ID already exists in selected Course
-            else if (_existingPlans.Count(x => x.Course.Id == SelectedCourse && x.Id == PlanId) > 0)
+            if (_existingPlans.Count(x => x.Course.Id == SelectedCourse && x.Id.ToLower() == PlanId.ToLower()) > 0)
                 return false;
             // Reference Point Name already exists
-            if (_existingReferencePoints.Select(x => x.Id).Contains(ReferencePointName))
+            if (_existingReferencePoints.Select(x => x.Id.ToLower()).Contains(ReferencePointName.ToLower()))
                 return false;
             // Course ID has leading/trailing spaces
             else if (!String.IsNullOrEmpty(CourseId) && (CourseId.EndsWith(" ") || CourseId.StartsWith(" ")))
@@ -651,7 +683,7 @@ namespace DosimetryHelper
         {
             try
             {
-                //move user origin to selected point
+                // Move User Origin to selected point
                 SelectedImageSet.UserOrigin = SelectedPOI.CenterPoint;
             }
             catch (Exception e)

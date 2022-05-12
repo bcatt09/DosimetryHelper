@@ -73,7 +73,7 @@
                      Height="30"
                      MaxLength="16" 
                      Controls:TextBoxHelper.Watermark="Enter Dataset Name"
-                     Text="{Binding DatasetName, UpdateSourceTrigger=PropertyChanged}"
+                     Text="{Binding DatasetName, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged, NotifyOnValidationError=True}"
                      GotFocus="DatasetNameField_GotFocus"
                      Width="200"/>
 
