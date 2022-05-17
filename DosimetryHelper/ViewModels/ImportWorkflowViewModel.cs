@@ -479,10 +479,10 @@ namespace DosimetryHelper
             else if (PlanIdFlag && String.IsNullOrEmpty(PlanId))
                 return false;
             // Plan ID already exists in selected Course
-            if (_existingPlans.Count(x => x.Course.Id == SelectedCourse && x.Id.ToLower() == PlanId.ToLower()) > 0)
+            else if (SelectedCourse != null && PlanId != null && _existingPlans.Count(x => x.Course.Id == SelectedCourse && x.Id.ToLower() == PlanId.ToLower()) > 0)
                 return false;
             // Reference Point Name already exists
-            if (_existingReferencePoints.Select(x => x.Id.ToLower()).Contains(ReferencePointName.ToLower()))
+            else if (!String.IsNullOrEmpty(ReferencePointName) && _existingReferencePoints.Select(x => x.Id.ToLower()).Contains(ReferencePointName.ToLower()))
                 return false;
             // Course ID has leading/trailing spaces
             else if (!String.IsNullOrEmpty(CourseId) && (CourseId.EndsWith(" ") || CourseId.StartsWith(" ")))
