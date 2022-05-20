@@ -45,5 +45,11 @@ namespace DosimetryHelper
         {
             Close();
         }
+
+        private void RemoveFocus(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Keyboard.ClearFocus();  // Remove focus from TextBoxes to prevent crashing Eclipse
+            System.Threading.Thread.Sleep(1000);  // And then pause for a bit to let it sink in?
+        }
     }
 }

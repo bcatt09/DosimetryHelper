@@ -10,6 +10,7 @@
 		         mc:Ignorable="d"
 		         Height="auto" Width="auto"
                  ResizeMode="CanMinimize"
+                 Closing="RemoveFocus"
                  Background="{DynamicResource MahApps.Brushes.Window.Background}">
     
     <mah:MetroWindow.RightWindowCommands>

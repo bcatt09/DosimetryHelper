@@ -7,6 +7,7 @@
                  xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
                  mc:Ignorable="d"
                  Height="auto" Width="auto" MinHeight="250" MinWidth="650"
+                 Closing="RemoveFocus"
                  Background="{DynamicResource MahApps.Brushes.Window.Background}">
 
     <mah:MetroWindow.RightWindowCommands>
