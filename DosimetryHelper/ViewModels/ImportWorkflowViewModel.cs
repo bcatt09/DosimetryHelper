@@ -445,8 +445,8 @@ namespace DosimetryHelper
                 SelectedImageSet = _context.Image;
             
             // Get POIs from opened dataset and select the first one
-            POIList = _context.StructureSet.Structures.Where(s => s.DicomType == "MARKER");
-            SelectedPOI = POIList.FirstOrDefault();
+            POIList = _context.StructureSet?.Structures?.Where(s => s.DicomType == "MARKER");
+            SelectedPOI = POIList?.FirstOrDefault();
             if (SelectedPOI != null)
                 IsoFlag = true;
 
