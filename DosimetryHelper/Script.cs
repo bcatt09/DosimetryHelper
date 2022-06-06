@@ -11,7 +11,7 @@ using System.Windows.Input;
 using DosimetryHelper;
 
 [assembly: ESAPIScript(IsWriteable = true)]
-[assembly: AssemblyVersion("1.5.0")]
+[assembly: AssemblyVersion("1.6.0")]
 
 namespace VMS.TPS
 {

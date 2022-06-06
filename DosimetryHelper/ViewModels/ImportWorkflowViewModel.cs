@@ -29,6 +29,7 @@ namespace DosimetryHelper
         private IEnumerable<ReferencePoint> _existingReferencePoints;
         private IEnumerable<Image> _existingImages;
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
+        private bool _notifiedOfCanPerformUpdatesError = false;
         // Helper Regexes
         private Regex _courseNumberRegex;
         private Regex _planModalityRegex;
@@ -460,44 +461,56 @@ namespace DosimetryHelper
         // Methods
         public bool CanPerformUpdates()
         {
-            // Dataset Name has leading/trailing spaces
-            if (!String.IsNullOrEmpty(DatasetName) && (DatasetName.EndsWith(" ") || DatasetName.StartsWith(" ")))
+            try
+            {
+                // Dataset Name has leading/trailing spaces
+                if (!String.IsNullOrEmpty(DatasetName) && (DatasetName.EndsWith(" ") || DatasetName.StartsWith(" ")))
+                    return false;
+                // Dataset Name exists in Series
+                else if (!String.IsNullOrEmpty(DatasetName) && _existingImages.Count(x => x.Id.ToLower() == DatasetName.ToLower() && x.Series.Id == _context.Image.Series.Id) > 0)
+                    return false;
+                // Course is not selected
+                else if (String.IsNullOrEmpty(SelectedCourse))
+                    return false;
+                // Course ID already exists
+                else if (CourseIdFlag && _existingCourses.Select(x => x.Id.ToLower()).Contains(CourseId.ToLower()))
+                    return false;
+                // Course is completed
+                else if (!CourseIdFlag && !String.IsNullOrEmpty(SelectedCourse) && _existingCourses.FirstOrDefault(x => x.Id == SelectedCourse).IsCompleted())
+                    return false;
+                // Plan ID not entered and a Plan is being created
+                else if (PlanIdFlag && String.IsNullOrEmpty(PlanId))
+                    return false;
+                // Plan ID already exists in selected Course
+                else if (SelectedCourse != null && PlanId != null && _existingPlans.Count(x => x.Course.Id == SelectedCourse && x.Id.ToLower() == PlanId.ToLower()) > 0)
+                    return false;
+                // Reference Point Name already exists
+                else if (!String.IsNullOrEmpty(ReferencePointName) && _existingReferencePoints.Select(x => x.Id.ToLower()).Contains(ReferencePointName.ToLower()))
+                    return false;
+                // Course ID has leading/trailing spaces
+                else if (!String.IsNullOrEmpty(CourseId) && (CourseId.EndsWith(" ") || CourseId.StartsWith(" ")))
+                    return false;
+                // Plan ID has leading/trailing spaces
+                else if (!String.IsNullOrEmpty(PlanId) && (PlanId.EndsWith(" ") || PlanId.StartsWith(" ")))
+                    return false;
+                // Plan Name has leading/trailing spaces
+                else if (!String.IsNullOrEmpty(PlanName) && (PlanName.EndsWith(" ") || PlanName.StartsWith(" ")))
+                    return false;
+                // Reference Point Name has leading/trailing spaces
+                else if (!String.IsNullOrEmpty(ReferencePointName) && (ReferencePointName.EndsWith(" ") || ReferencePointName.StartsWith(" ")))
+                    return false;
+                else
+                    return true;
+            }
+            catch (Exception e)
+            {
+                if(!_notifiedOfCanPerformUpdatesError)
+                    MessageBox.Show($"{e.Message}\n{e.StackTrace}", "Error in CanPerformUpdates");
+
+                _notifiedOfCanPerformUpdatesError = true;
+
                 return false;
-            // Dataset Name exists in Series
-            else if (!String.IsNullOrEmpty(DatasetName) && _existingImages.Count(x => x.Id.ToLower() == DatasetName.ToLower() && x.Series.Id == _context.Image.Series.Id) > 0)
-                return false;
-            // Course is not selected
-            if (String.IsNullOrEmpty(SelectedCourse))
-                return false;
-            // Course ID already exists
-            else if (CourseIdFlag && _existingCourses.Select(x => x.Id.ToLower()).Contains(CourseId.ToLower()))
-                return false;
-            // Course is completed
-            else if (!CourseIdFlag && !String.IsNullOrEmpty(SelectedCourse) && _existingCourses.FirstOrDefault(x => x.Id == SelectedCourse).IsCompleted())
-                return false;
-            // Plan ID not entered and a Plan is being created
-            else if (PlanIdFlag && String.IsNullOrEmpty(PlanId))
-                return false;
-            // Plan ID already exists in selected Course
-            else if (SelectedCourse != null && PlanId != null && _existingPlans.Count(x => x.Course.Id == SelectedCourse && x.Id.ToLower() == PlanId.ToLower()) > 0)
-                return false;
-            // Reference Point Name already exists
-            else if (!String.IsNullOrEmpty(ReferencePointName) && _existingReferencePoints.Select(x => x.Id.ToLower()).Contains(ReferencePointName.ToLower()))
-                return false;
-            // Course ID has leading/trailing spaces
-            else if (!String.IsNullOrEmpty(CourseId) && (CourseId.EndsWith(" ") || CourseId.StartsWith(" ")))
-                return false;
-            // Plan ID has leading/trailing spaces
-            else if (!String.IsNullOrEmpty(PlanId) && (PlanId.EndsWith(" ") || PlanId.StartsWith(" ")))
-                return false;
-            // Plan Name has leading/trailing spaces
-            else if (!String.IsNullOrEmpty(PlanName) && (PlanName.EndsWith(" ") || PlanName.StartsWith(" ")))
-                return false;
-            // Reference Point Name has leading/trailing spaces
-            else if (!String.IsNullOrEmpty(ReferencePointName) && (ReferencePointName.EndsWith(" ") || ReferencePointName.StartsWith(" ")))
-                return false;
-            else
-                return true;
+            }
         }
 
         public void ImportWorkflowPerformUpdates()
